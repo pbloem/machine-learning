@@ -1,0 +1,171 @@
+\documentclass[11pt]{article}
+
+\input{preamble}
+
+\title{Week 1: preliminaries}
+
+\begin{document}
+
+\maketitle
+
+\noindent This week, the homework will be a review of the subjects you should be familiar with already. Machine learning is built mostly on three fields: \emph{Linear Algebra}, \emph{Calculus} and \emph{Probability Theory}. Luckily, we only use a very limited number of concepts from each.
+
+These exercises should give you an indication of whether you have a sufficient grasp of these subjects. If you struggle with any of the exercises below, please follow the links provided to brush up, before continuing with next week's homework. 
+
+For general knowledge questions: don't worry if you don't know everything by heart, but it shouldn't take you too long to look the answers up.
+
+\section{Linear Algebra}
+
+In all homework and lectures, bold lowercase letters like $\x$ indicate a vector, bold uppercase letters like $\W$ indicate a matrix and non-bold lowercase letters like $x$ indicate a scalar (that is, a number).
+
+\begin{Exercise}
+\noindent Explain in words what the following notations represent:
+
+\begin{enumerate}
+\item $f: \R^3 \to \R^2$ \ans{$f$ is a function from the 3-dimensional Euclidean space to the 2-dimensional Euclidean space.}{}
+\item $\y = \W \x$ \ans{The vector $\y$ is defined as the product of the matrix $\W$ and the vector $\x$}{}
+\item $\z = \y^T\x$ \ans{The vector $\z$ is defined as the the transposed vector $\y$ times the vector $\x$. This is also known as the \emph{dot product} of $\x$ and $\y$.}{}
+\item $\W \in \R^{5 \times 4}$ \ans{$\W$ is a matrix with 5 rows, and 4 columns.}{}
+\end{enumerate}
+
+Hint: if you're not sure, see if you can find the symbols in this page: \url{https://en.wikipedia.org/wiki/List_of_mathematical_symbols}. Even if that doesn't explain it fully, it may provide you with some keywords to google.
+\end{Exercise}
+
+\begin{Exercise}
+\noindent Which of the following operations are possible, and which aren't?
+
+\begin{enumerate}
+\item Multiplying a $5 \times 4$ matrix by another $5 \times 4$ matrix. \ans{Impossible}{}
+\item Element-wise multiplying a $5 \times 4$ matrix by another $5 \times 4$ matrix. \ans{Possible}{}
+\item Multiplying a $5 \times 4$ matrix by a $4 \times 5$ matrix. \ans{Possible}{}
+\item Multiplying a $5 \times 4$ matrix by a $4 \times 1$ matrix. \ans{Possible}{}
+\item Element-wise multiplying a $5 \times 4$ matrix by a $4 \times 5$ matrix. \ans{Impossible}{}
+\item Multiplying any matrix by its transpose. \ans{Always possible}{}
+\item Element-wise multiplying any matrix by its transpose. \ans{Not always possible}{}
+\item Element-wise multiplying a square matrix by its transpose. \ans{Always possible}{}
+\end{enumerate}
+\end{Exercise}
+
+\ans{Here is a good visual illustration of matrix multiplication.\footnote{Source: This file was derived from:  Matrix multiplication diagram.svg, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=15175268, by user Bilou}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\linewidth]{matmult}
+\caption{Matrix multiplication}
+\end{figure}
+\noindent Note that the first matrix must have the same number of columns, as the second has rows. The other dimensions can be chosen freely.}{}
+
+\begin{Exercise}
+\noindent Which of the following is true?
+	
+\begin{enumerate}
+\item Let $\U = \V\W$ for matrices $\U$, $\V$, $\W$. $\U_{ij}$ is the dot product of the $i$-th column of $\V$ and the $j$-th column of $\W$. \ans{False}{}
+\item Let $\U = \V\W$ for matrices $\U$, $\V$, $\W$. $\U_{ij}$ is the dot product of the $i$-th row of $\V$ and the $j$-th column of $\W$. \ans{True}{}
+\item Matrix multiplication is \emph{commutative}. \ans{False. It is not always true that $\V\W = \W\V$.}{}
+\item Matrix multiplication is \emph{distributive}. \ans{True. Multiplication can always be \emph{distributed} over a sum: $\U(\V+\W) = \U\V + \U\W$ and $(\V+\W)\U = \V\U + \W\U$. Note that the order needs to be maintained: \red{$\U(\V+\W) = \V\U + \W\U$} does \textbf{not} hold for all matrices.}{}
+
+\item Matrix multiplication is \emph{associative}. \ans{True. Multiplying $\U$ by $\V$ and multiplying the result by $\W$ is the same as multiplying $\U$ by the result of multiplying $\V$ by $\W$: $(\U\V)\W) = \U(\V\W)$}{}
+\item There exist matrices $\U$ and $\V$ such that $\U\V = \V\U$. \ans{True. For instance, if one of them is the identity matrix, this always holds.}{}
+
+\end{enumerate}
+\end{Exercise}
+
+
+\begin{Exercise}
+\begin{enumerate}
+	\item The linear function $f(a, b, c) = \alpha a + \beta b + \gamma c$ can be written as the dot product of two vectors. What are the vectors? \ans{If $\x = (a, b, c)^T$ and $\bw = (\alpha, \beta, \gamma)^T$, then $f(x) = \bw^T\x$}{}
+	\item The linear function $f(a, b, c) = \alpha a + \beta b + \gamma c + \delta$ can be also be written as the dot product of two vectors. What are the vectors? \ans{If $\x = (a, b, c, 1)^T$ and $\bw = (\alpha, \beta, \gamma, \delta)^T$, then $f(x) = \bw^T\x$}{}
+	\item The \emph{quadratic} function $f(a, b) = \alpha a^2 + \beta ab + \gamma ba + \delta b^2$ can be written as $f(\x) = \x^T\W\x$. What should $\x$ and $\W$ be? \ans{$\x = \begin{bmatrix}a\\ b\end{bmatrix}$,$\W = \begin{bmatrix}\alpha & \beta \\ \gamma & \delta \end{bmatrix}$}{}
+\end{enumerate}
+\end{Exercise}
+
+\noindent If you found these exercises completely impossible, you should brush up on your Linear Algebra a little. You don't need much, the basics of vectors, matrices and matrix multiplication should do the trick. The following articles may help. If not, hunt around for one that explains things at your level:
+\begin{itemize}
+\item \url{https://betterexplained.com/articles/linear-algebra-guide/}
+\item \url{https://www.khanacademy.org/math/linear-algebra}
+\item \url{http://samples.jbpub.com/9781556229114/chapter7.pdf}
+\end{itemize}
+If you find anything that helps you, let us know on the discussion board.
+
+\section{Calculus}
+
+To denote the derivative of $f(x)$ we will use the notation $\frac{df(x)}{dx}$ (with $\partial$ taking the place of $d$ for partial derivatives). You may be more comfortable with the notation $f'(x)$ for the derivative. I sympathize, but when it comes to machine learning, the former notation makes things much simpler down the line, so I recommend getting used to it.
+
+\begin{Exercise}
+\noindent Let $f(x) = 3x^2 + 5x + 1$ with $x$ a scalar.
+\begin{enumerate}
+	\item What is the derivative of $f(x)$? \ans{$\frac{df(x)}{dx} = \frac{3x^2 + 5x + 1}{dx} = \frac{3x^2}{dx} + \frac{5x}{dx} + \frac{1}{dx} = 3\frac{x^2}{dx} + 5\frac{x}{dx} + \frac{1}{dx} = 3\cdot2x + 5\cdot1 + 0 = 6x + 5$}{}
+	\item For which $x$ is $f(x)$ at its minimum? \ans{$\frac{df(x)}{dx} = 0$, $6x + 5 = 0$, $x = - \frac{5}{6}$}{}
+	\item Let $h(x) = g(f(x))$, with $f$ defined as above. Let $\frac{dg(x)}{dx} = \frac{\sin(x)}{x}$. Without knowing what $g(x)$ is, can we find the derivative of $h(x)$? \ans{Yes, using the \emph{chain rule}: $\frac{dp(q(x))}{dx} = \frac{dp(q(x))}{dq(x)}\frac{dq(x)}{dx}$. Thus $\frac{dh(x)}{dx} = \frac{dg(f(x))}{dx} = \frac{dg(f(x))}{df(x)}\frac{df(x)}{dx} = \frac{\sin f(x)}{f(x)} (6x + 5) = \frac{\sin(3x^2 + 5x + 1)}{3x^2 + 5x + 1}(6x + 5)$.}{}
+\end{enumerate}
+\end{Exercise}
+
+
+\begin{Exercise}
+\noindent Let $\x \in \R^2$ and let $f(\x) = 3 {x_1}^2 + 4 x_1x_2 - {x_2}^2$
+\begin{enumerate}
+\item What is the partial derivative of $f(\x)$ with respect to $x_1$? \ans{\[\frac{\partial\left ( 3 {x_1}^2 + 4 x_1x_2 - {x_2}^2\right ) }{\partial x} = \frac{\partial 3{x_1}^2}{\partial x_1} + \frac{\partial 4 x_1x_2 }{\partial x_1} + \frac{\partial 4 {x_2}^2}{\partial x_1}  = 6x_1 + 4x_2 \]}{}
+\item What is the partial derivative of $f(\x)$ with respect to $x_2$? \ans{\[\frac{\partial 3{x_1}^2}{\partial x_2} + \frac{\partial 4 x_1x_2 }{\partial x_2} + \frac{\partial 4 {x_2}^2}{\partial x_2} = 4x_1 - 2x_2 \]}{}
+\item What is the \emph{gradient} of $f(\x)$? \ans{The gradient is the vector of all partial derivatives: $\nabla f(x) = (6x_1 + 4x_2, 4x_1 - 2 x_2)$. For practical reasons, the gradient is usually defined as a row vector (when the input to $f$ is a column vector).}
+\item The gradient is a function derived from $f$, just like the derivative is a function. What are the domain and range of the gradient of $f(\x)$?	 \ans{The gradient has the same input as $f$, so the domain is also $\R^2$. The gradient defines a vector of length two for each input, so its range is $\R^2$. In other words $\nabla f: \R^2 \to \R^2$.}{}
+\end{enumerate}
+\end{Exercise}
+
+\noindent As before, if you found these exercises tricky, even after reading the answers, you should probably brush up a little on your calculus. Here are some links you may find helpful.
+\begin{itemize}
+\item \url{https://betterexplained.com/articles/vector-calculus-understanding-the-gradient/}
+\item \url{https://www.khanacademy.org/math/multivariable-calculus/multivariable-derivatives/partial-derivative-and-gradient-articles/a/introduction-to-partial-derivatives}
+\item \url{http://tutorial.math.lamar.edu/Classes/CalcIII/PartialDerivatives.aspx}
+\end{itemize}
+
+\section{Probability}
+
+\begin{Exercise}
+\begin{enumerate}
+\item In a few sentences, explain the difference between the Frequentist and the Bayesian interpretation of probability. \ans{A frequentist considers a probability an objective value: a property of the universe that can be measured by repeated experimentation, like measuring the probability that a bent coin lands heads, by flipping it repeatedly. A Bayesian considers probability an expression of uncertain belief. A bayesian can talk about the probability that "John is having an affair". To a frequentist this is nonsense, because John is either having an affair or he isn't.}{}
+\item What is the difference between a sample space and an event space? \ans{A sample space is a space of individual things that can happen (like a die landing on a 6) and an event space is a space of sets of things from the sample space (like a die landing on an even number). Technically, an event space should be a sigma-algebra of a sample space, but for discrete probability distributions, we can think of the event space as a the powerset of the sample space. For continuous probability distributions, we can ignore the technical details.}{}
+\item What is the difference between a probability distribution and a probability density function? \ans{A probability function assigns probabilities to events. If the sample space is continuous (like in the case of a normal distribution) all atomic events like "John's length is exactly 2 meters" will have zero probability. Instead, we define a probability density function. We then get the probability of a subset of the sample space, like "John's height is between 1.95 and 2.05", by integrating over the probability density function.}{}
+\end{enumerate}	
+\end{Exercise}
+
+\begin{Exercise}
+\noindent In the following, $p$ is a  probability function and $A$ and $B$ are events. Which of the following are true?
+\begin{enumerate}
+	\item Joint probability is symmetric: $p(A, B) = p(B, A)$. \ans{True}{}
+	\item Conditional probability is symmetric $p(A \mid B) = p(B \mid A)$. \ans{False. This is not true in general (although it may be true for specific $A$ and $B$).}{}
+	\item Two random variables $X$ and $Y$ are conditionally independent on a third $Z$. Once we know $X$ and $Y$, we also know the value of $Z$. \ans{False.}{}
+	\item Two random variables $X$ and $Y$ are conditionally independent on a third $Z$. Once we know $Z$, also knowing $X$ will tell us nothing extra about $Y$. \ans{True: conditional independence means that given the value of the conditional, $X$ and $Y$ are independent (so knowing the value of one reveals nothing about the other).}{}
+\end{enumerate}	
+\end{Exercise}
+
+\begin{Exercise}
+
+\noindent Assume that the probability that a given patient has diabetes is $0.01$. We have a test for diabetes with a false positive rate of $0.05$: if a patient has no diabetes, the test diagnoses it 5\% of the time. The false negative rate is $0.1$. 
+You are a doctor, and you administer the test to patient (knowing nothing else). The test says she has diabetes. What is the probability that she doesn't? Hint: this is a question about Bayes' rule.
+Reflect on the result. Is this what you would've expected? If not, where does the unexpected result come from?
+
+\ans{Let's write down the given probabilities first. We'll use $D$ and $\neg D$ for the events that the patient has and doesn't have diabetes respectively. We'll use $T$ for the event of the test \emph{saying} that the patient has diabetes and $\neg T$ for the test saying that she doesn't.
+We are given $p(D) = 0.01$, $p(T \mid \neg D) = 0.05$ and $p(\neg T \mid D) = 0.1$. We can derive $p(\neg T\mid \neg D) = 0.95$ and $p(T \mid D) = 0.9$.
+Now, we want to know $p(\neg D \mid T)$. We'll use Bayes' rule to reverse the probability and the conditional:
+\begin{align*}
+p(\neg D \mid T) &= \frac{p(T \mid \neg D) p(\neg D)}{p(T)} \\
+&= \frac{p(T \mid \neg D) p(\neg D)}{p(T, D) + p(T, \neg D)} \\
+&= \frac{p(T \mid \neg D) p(\neg D)}{p(T \mid D)p(D) + p(T \mid \neg D)p(\neg D)} \\
+&= \frac{0.05 \times 0.99}{0.9 \times 0.01 + 0.05 \times 0.99} \\
+&= \frac{5 \times 99}{ 5\times 99 + 90} \approx 0.85
+\end{align*}
+Whether you expected this result is up to you, of course, but it's certainly not what you want form a test like this. The false positive and false negative rates don't seem so high as to make the test useless. In the last line, I've multiplied everything by 100 so you can see where the imbalance comes from: the high prior probability that someone doesn't have diabetes dominates. 
+In order for the test to be reliable, the false positive rate needs to be low enough to cancel to make the numerator small in proportion to the denominator.
+}{}
+\end{Exercise}
+
+
+
+And again, here are some links. Probability theory is a difficult subject, and we don't expect you to understand it completely, down to all the technical definitions. We we review most of this stuff in the lectures and homework if the time comes. Still, if you were completely baffled by these exercises, you may want to read ahead a little.
+
+\begin{enumerate}
+\item \url{https://betterexplained.com/articles/a-brief-introduction-to-probability-statistics/}
+\item \url{https://www.khanacademy.org/math/probability/probability-geometry/probability-basics/a/probability-the-basics}
+\item \url{http://dept.stat.lsa.umich.edu/~moulib/probrefresh.pdf}
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,234 @@
+\documentclass[11pt]{article}
+
+\input{preamble}
+
+\title{Week 2: Gradients}
+
+\begin{document}
+
+\maketitle
+
+In this session we will practice searching for a good or optimal model using the \emph{gradient}. We will define the \emph{loss function} of a model, with respect to some target data, and we will will minimize the loss function with respect to the parameters.
+
+In the following explanation, some parts are replaced by green dots. Fill these in.
+
+\section{Partial derivatives}
+
+We'll begin by reviewing the idea of \emph{partial derivatives}: derivatives of functions with multiple inputs. If you haven’t worked with derivatives for a while (or ever), start by having a look at the following resources:
+\begin{itemize}
+\item \url{https://www.youtube.com/watch?v=ANyVpMS3HL4}
+\item \url{https://www.youtube.com/watch?v=hCLfogkqzEk}
+\item \url{http://betterexplained.com/articles/derivatives-product-power-chain/}
+\end{itemize}
+
+A partial derivative is the derivative with respect to one of the parameters, treating all the others as constants. For a simple example, consider the function
+\[
+ f(a,b)= 3a^2 + b^2 - ab + a.
+\]
+
+We first take the derivative with respect to a:
+\[
+	\frac{\partial f(a,b)}{\partial a} = \frac{\partial(3a^2 + b^2 - ab + a)}{\partial a} = 6a -b + 1 \p
+\]
+Note that the second term of the function ($b^2$) does not contain $a$, i.e. it is constant with respect to $a$, so it disappears from the derivative.
+
+Then, we take the derivative wrt. to b:
+\[
+\frac{\partial f(a,b)}{\partial b} = \frac{\partial(3a^2 + b^2 - ab + a)}{\partial b} = 2b - a \p
+\]
+The gradient $\nabla f(a,b)$ is simply all the partial derivatives of a function arranged in a (row) vector:
+\[
+ \left ( \frac{\partial f(a,b)}{\partial a}, \frac{\partial f(a,b)}{\partial b}\right) = (6a - b + 1, 2b - a) \p
+\]
+
+\noindent If we imagine the function f as a ``landscape'' over the plane defined by the $a$ and $b$-axes, the gradient at each point in that plane, is an arrow pointing in the direction in which the ascent is the steepest.\footnotemark A marble placed at some point, and released, would roll in the opposite direction to the gradient.
+
+\footnotetext{We can interpret a vector $\x \in R^n$ as a point in $R^n$, but also as a \emph{direction}. The direction is that of the arrow between the origin and the point $\x$. The gradient only makes sense as a direction.}
+
+To find the point at which the function has reached its minimum, we must find out where all partial derivatives are equal to zero.\footnotemark
+\footnotetext{To be precise, if all partial derivatives are zero, the function may be at a minimum, a maximum, or a plateau. It may even be a saddle-point, a place where the function is a minimum in one dimension and a maximum in another. For the purposes of this exercise, you may assume that if the gradient is zero, you have found a minimum.}
+
+\begin{Exercise} To find the a and b for which f(a, b) is minimal, we set the partial derivatives to zero. Fill in the blanks (indicated by ``\ldots'') in this derivation:
+\begin{align*}
+6a - b + 1 &= 0 & 2b-a &= 0 \\
+a &= (b-1)/6 & b &= a/2 \\
+ & & b &= \ans{\frac{b-1}{6}\frac{1}{2}}{\dots}\\ 
+ & & \ans{b - \frac{b}{12}}{\ldots}&= \ans{- \frac{1}{12}}{\ldots}\\
+  & & b &= -\frac{1}{11}\\
+  a &= \ans{\frac{-\frac{1}{11} - 1}{6}}{\ldots}=-\frac{2}{11} & & \\
+\end{align*}
+\end{Exercise}
+
+\noindent A quick check on \href{http://wolfr.am/9DrZFKcR}{Wolfram Alpha} shows that this solution is correct.
+
+\subsection{Rules}
+
+While it’s important to understand intuitively what differentation means (see the \emph{better explained} link above), actually finding a specific derivative is usually a very mechanical process of matching existing rules and rewriting a function to a useful form. The following rules are usually sufficient:
+Let $c$ be a constant, independent of $x$, and let $f(x)$ and $g(x)$ be arbitrary functions of $x$. Then:
+
+\begin{align*}
+	\frac{\kp c}{\kp x}     &=0        & \text{ the \emph{constant} rule} \\
+	\frac{\kp x^\rc{n}}{\kp x}   &=\rc{n}x^{\rc{n}-1} & \text{the \emph{exponent} rule} \\
+	\frac{\kp x}{\kp x}     &= 1       & \text{(follows from the exponent rule)} \\
+	\frac{\kp \rc{c}f(x)}{\kp x} &= \rc{c}\frac{\kp f(x)}{\kp x} & \text{the \emph{constant factor} rule} \\
+	\frac{\kp \kc{\left ( \bc{f(x)} + \gc{g(x)}\right )}}{\kp x} &= \frac{\kp \bc{f(x)}}{\kp x} + \frac{\kp \gc{g(x)}}{\kp x} & \text{the \emph{sum} rule} \\
+	\frac{\kp \bc{f(\gc{g(x)})} }{\kp x} &= \frac{\kp \bc{f(\gc{g(x)})}}{\kp \gc{g(x)}}\frac{\kp \gc{g(x)}}{\kp x} & \text{the \emph{chain} rule} \\
+\end{align*}
+
+To find the derivative of $f(x, y, z)$ with respect to $y$, you write down 
+\[
+\frac{\partial f(x, y, z)}{\partial y} \text{,}\]
+fill in the definition of $f$, and match the result (whole, or part of it) with the left-hand side of one of these rules. You replace it by the right-hand side and keep going until all the $\partial$'s are gone.
+
+\begin{Exercise}
+\noindent To practice, let's take the 	derivative of $(x + y + z)^2$ with respect to $y$. Fill in the blanks.
+
+\begin{align*}
+\frac{\kp \bc{(\gc{x + y + z})^2}}{\kp y} &= \frac{\kp \bc{(\gc{x + y + z})^2}}{\kp \kc{(\gc{x + y + z})}}\frac{\kp \kc{(\gc{x + y + z})}}{\kp y} & \text{using the \ans{chain}{\ldots} rule} \\
+ &= 2(x + y + z)\frac{\kp \kc{(x + y + z)}}{\kp \kc{y}} & \text{using the \ans{exponent}{\ldots} rule} \\
+ &= \kc{2(x + y + z)}\left (\frac{\kp x}{\kp y} + \frac{\kp y}{\kp y} + \frac{\kp z}{\kp y} \right) & \text{using the \ans{sum}{\ldots} rule} \\
+  &= \kc{2(x + y + z)}(0 + 1 + 0) & \text{using the \ans{constant}{\ldots} and \ans{exponent}{\ldots} rules} \\
+  &=  2(x + y + z) & \\
+\end{align*}
+
+\end{Exercise}
+
+\section{Linear regression}
+
+As discussed in the lecture, the optimal model for standard linear regression can be computed directly. In this assignment we will derive this function. Let’s say we are trying to predict the size to which a particular newborn baby will grow in the coming months. We have measured the child in its first few months and found the following data:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l | l}
+	age($a$, months) & height ($h$, cm) \\
+	\hline
+	$a_1 = 0$ & $h_1 = 30$ \\
+	$a_2 = 2$ & $h_2 = 40$ \\
+	$a_3 = 4$ & $h_3 = 50$ 
+\end{tabular}
+\end{table}
+
+
+\noindent Let $n$ be the number of examples we have (3 in this case, but we want to derive a solution for arbitrary $n$). Our model, $f$, is a linear function, described by two parameters: the slope $s$ and the intercept $b$:
+\[
+f_{s, b}(a) = sa + b
+\]
+
+Where $f(a_i)$ should be as close to $h_i$ as possible. We will use the sum of squared errors as our loss function. That is, we will compute the residual $f(a_i) - h_i$ for each data point, square them, and sum these squared values. In other words, our loss function is
+\[
+\text{loss}(s, b) = \frac{1}{2}\sum_i\left ( \rc{f_{s, b}(a_i)} - h_i\right )^2 = \frac{1}{2}\sum_i\left ( \rc{sa_i + b} - h_i\right )^2
+\]
+
+\noindent The $\frac{1}{2}$ multiplier is there to simplify the derivatives later. It doesn't affect the minimum of the loss function, which is what we're after.\footnotemark
+
+\footnotetext{In the slides, we used the \emph{mean} sum of squared errors (i.e. we multiplied by $\frac{1}{n}$ as well). Since $n$ is a constant, the two functions have the same minimum and we can use either one.}
+
+\begin{Exercise}
+\noindent For $s=1$ and $b=0$, and the data given above, what is the loss?
+\ans{
+\begin{align*}
+	\text{loss}(1, 0) &= \frac{1}{2}\sum_i\left ( \rc{1 \times a_i + 0} - h_i\right )^2 \\
+	&= \frac{1}{2}\left ((0 - 30)^2 + (2 - 40)^2 + (4 - 50)^2 \right) \\
+	&= \frac{1}{2}\left (900 + 1444 + 2116 \right) = 2230\\
+\end{align*}
+}{}
+\end{Exercise}
+
+\begin{Exercise}
+\noindent The term $f(a_i) - h_i$ represents the difference between our model's prediction and the observed value (the \emph{residual}). Per example, this is a good measure of the error. Why do we not just sum these, and check how far it is from 0? Why square it first, and \emph{then} sum?
+\end{Exercise}
+
+\ans{
+If we summed them, one big positive error could cancel out against one big negative error, giving the false impression that the model is highly accurate. We need to square the errors before summing them. The choice for square instead of another approach (like taking the absolute value, or raising to some other power) is more subtle. Squaring emphasizes the loss of large errors compared to the absolute value.
+
+It turns out that if we assume that the data is linear, but with added Gaussian noise, optimizing for the sum-of-squared errors is equivalent to optimizing likelihood (we will discuss this later in the probability lectures.)
+}{}
+
+\begin{Exercise}
+\noindent Let's find the derivative of the loss function. One with respect to $s$ and one with respect to $b$. Fill in the blanks.
+
+\begin{align*}
+\frac{\kp\text{loss}(s, b)}{\kp s} & = \frac{\kp \frac{1}{2} \sum_i\left (s a_i + b - h_i \right) ^2}{\kp s} \\
+&= \frac{1}{2} \sum_i \frac{\kp \left (sa_i + b -h\right )^ 2}{\kp (sa_i + b -h_i)}\frac{\kp (sa_i + b -h_i)}{\kp s}\\
+&= \ans{\frac{1}{2}\sum_i 2(a_is + b - h_i)a_i}{\ldots} \\	
+&= \sum_i (a_is + b - h_i)a_i \\	
+&= \sum_i ({a_i}^2s + a_ib - a_ih_i) \\	
+&= s \sum_i {a_i}^2 + b \sum_ia_i - \sum_i a_i h_i \\	
+\end{align*}
+
+\begin{align*}
+\frac{\kp\text{loss}(s, b)}{\kp b} & = \ans{\frac{\kp \frac{1}{2} \sum_i\left (s a_i + b - h_i \right) ^2}{\kp b}}{\dots} \\
+&= \ans{\frac{1}{2} \sum_i \frac{\kp \left (sa_i + b -h\right )^ 2}{\kp (sa_i + b -h_i)}\frac{\kp (sa_i + b -h_i)}{\kp b}}{\ldots}\\
+&= \ans{\frac{1}{2}\sum_i 2(a_is + b - h_i)}{\ldots} \\	
+&= \sum_i (a_is + b - h_i) \\	
+&= s \sum_i {a_i} + bn - \sum_i h_i \\	
+\end{align*}
+\end{Exercise}
+
+\begin{Exercise}
+\noindent For many loss functions, setting the gradients equal to zero results in a system of equations that cannot be solved analytically. In that case we will have to \emph{search}. We can still use the gradient though, in an algorithm called \emph{gradient descent}. Starting with the parameter values $s=1$ and $b=0$, describe one step of the gradient descent algorithm (with learning rate 0.01).
+\ans{
+For these parameters, the gradient is 
+\begin{align*}
+&\left (\rc{s \sum_i {a_i}^2 + b \sum_i a_i - \sum_i a_i h_i }, \;\; \bc{s \sum_i a_i + bn - \sum_i h_i} \right) \\
+&\;= \left(\rc{\sum_i {a_i}^2 - \sum_i a_i h_i},\;\; \bc{\sum_i {a_i} - \sum_i h_i} \right) \\
+&\;= \left( \rc{4 + 16 - (2\cdot 40 + 4\cdot 50)},\;\; \bc{6 - 120}\right) \\
+&\;= \left( \rc{-260},\;\; \bc{-114}\right) \\
+\end{align*}
+For gradient descent we pick the opposite direction (since the gradient points up), multiply by the learning rate, and add the result to the current parameters. Thus, the new parameters are:
+\begin{align*}
+\begin{bmatrix}s^\text{new} \\b^\text{new}\end{bmatrix} &= \begin{bmatrix}s \\b\end{bmatrix} - \eta \nabla \text{loss}(s, b)\\
+&= \begin{bmatrix}1 \\0\end{bmatrix} - 0.01 \begin{bmatrix}\bc{-260} \\\rc{-114}\end{bmatrix} = \begin{bmatrix}3.6 \\ 1.14\end{bmatrix}\p
+\end{align*} 
+}{}
+\end{Exercise}
+
+\begin{Exercise}
+\noindent Set the two derivatives found above equal to zero, and solve to obtain expressions for the optimal model. Make sure that your expression for $s$ does not depend on $b$, so that the solution can actually be computed. 
+To simplify notation, it can be helpful to use the following conventions for the data means and other statistics:
+\begin{align*}
+\overline{a} &= \frac{1}{n}\sum_i a_i	\\
+\overline{h} &= \frac{1}{n}\sum_i h_i	\\
+\overline{a^2} &= \frac{1}{n}\sum_i {a_i}^2	\\
+\overline{h^2} &= \frac{1}{n}\sum_i {h_i}^2	\\
+\overline{ah} &= \frac{1}{n}\sum_i a_ih_i	\\
+\end{align*}
+
+Fill in the blanks:
+
+\begin{align}
+	s \sum_i {a_i}^2 + b \sum_ia_i - \sum_i a_i h_i &= 0 \notag\\
+	s \sum_i {a_i}^2 &= \ans{- b \sum_ia_i + \sum_i a_i h_i}{\dots} \notag\\
+	s &= - b \frac{\sum_i a_i}{\sum_i{a_i}^2} + \frac{\sum_i a_i h_i}{\sum_i{a_i}^2} \notag \\
+	s &= \ans{- b \frac{\frac{1}{n}\sum_i a_i}{\frac{1}{n}\sum_i{a_i}^2} + \frac{\frac{1}{n}\sum_i a_i h_i}{\frac{1}{n}\sum_i{a_i}^2}}{\ldots} \notag\\
+	s &= -b\frac{\overline{a}}{\overline{a^2}} + \frac{\overline{ah}}{\overline{a^2}} \label{line:s}
+\end{align}
+
+\begin{align}
+	s \sum_i {a_i} + bn - \sum_i h_i &=0 \notag \\
+	bn &= \ans{\sum_ih_i - s\sum_i a_i}{\ldots} \notag\\
+	b &= \ans{\frac{1}{n}\sum_ih_i - s\frac{1}{n}\sum_i a_i}{\ldots} \notag\\
+	b &= \overline{h}-s\overline{a} \label{line:b}
+\end{align}
+Fill equation (\ref{line:b}) into equation (\ref{line:s}):
+\begin{align*}
+s &= -\left(\ans{\overline{h}-s\overline{a}}{\ldots}\right)\frac{\overline{a}}{\overline{a^2}} + \frac{\overline{ah}}{\overline{a^2}} \\
+s &= - \frac{\overline{h}\overline{a}}{\overline{a^2}} + s \frac{\overline{a}^2}{\overline{a^2}} + \ans{\frac{\overline{ah}}{\overline{a^2}}}{\ldots} \\
+ s \left(1-\frac{\overline{a}^2}{\overline{a^2}}\right)&= \ans{- \frac{\overline{h}\overline{a}}{\overline{a^2}} +\frac{\overline{ah}}{\overline{a^2}}}{\ldots} \\
+ s &= \frac{\overline{ah} - \overline{a}\overline{h}}{\overline{a^2} - \overline{a}^2} \\
+\end{align*}
+\noindent Note that we have now expressed $s$ and $b$ purely in terms of statistics that are easily computed from our data, like the mean height $\overline{h}$ and the mean age $\overline{a}$.
+\end{Exercise}
+
+\begin{Exercise}
+\noindent Fill in the values from the data set, and compute the optimal parameters for this data. Can you explain what the parameters $s$ and $b$ mean? That is, what can they tell us about the baby we've measured?
+\ans{Filling in the data gives us $\overline{ah} = \frac{280}{3}$, $\overline{a} = 2$, $\overline{h} = 40$, $\overline{a^2} = \frac{20}{3}$. This gives us
+\begin{align}
+s = \frac{\frac{280}{3} - 2\cdot 40}{\frac{20}{3} - 4} = \frac{\frac{40}{3}}{\frac{8}{3}} = 5 \\
+b = 40 - 5 \cdot 2 = 30
+\end{align}
+This tells us that this baby grows about 5 cm per month, and its size at birth was 30 cm. (Note these values were made up, and are a little small for a newborn baby.}{}
+See if \href{https://goo.gl/dEcRBG}{Wolfram Alpha} agrees with your answer.
+\end{Exercise}
+
+\end{document}

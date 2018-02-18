@@ -1,0 +1,61 @@
+\usepackage{color}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{eulervm}
+\usepackage{charter}
+\usepackage{exercise}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=DarkRed,urlcolor=DarkRed}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{bm}
+
+
+\newcommand{\p}{\text{\,.}}
+
+\newcommand{\R}{{\mathbb R}}
+\newcommand{\N}{{\mathbb N}}
+
+\newcommand{\U}{{\bm U}}
+\newcommand{\V}{{\bm V}}
+\newcommand{\W}{{\bm W}}
+\newcommand{\A}{{\bm A}}
+\newcommand{\B}{{\bm B}}
+\newcommand{\C}{{\bm B}}
+\newcommand{\bu}{{\bm u}}
+\newcommand{\bv}{{\bm v}}
+\newcommand{\bw}{{\bm w}}
+\newcommand{\x}{{\bm x}}
+\newcommand{\y}{{\bm y}}
+\newcommand{\z}{{\bm z}}
+\newcommand{\X}{{\bm X}}
+\newcommand{\Y}{{\bm Y}}
+\newcommand{\Z}{{\bm Z}}
+\newcommand{\bt}{{\bm t}}
+\newcommand{\ma}[1]{\begin{pmatrix}#1\end{pmatrix}}
+
+\newcommand{\ans}[2]{{\leavevmode\color{OliveGreen}#2}} % no answers
+% \newcommand{\ans}[2]{{\textcolor{OliveGreen}{#1}}} % answers
+
+\newcommand{\red}[1]{{\textcolor{Red}{#1}}}
+
+\newcommand{\rc}[1]{{\textcolor{DarkRed}{ #1 }}}
+\newcommand{\gc}[1]{{\textcolor{DarkGreen}{ #1 }}}
+\newcommand{\bc}[1]{{\textcolor{DarkBlue}{ #1 }}}
+\newcommand{\kc}[1]{{\textcolor{Gray}{ #1 }}}
+
+\newcommand{\kp}{{\kc{\partial}}}
+
+% Exam questions
+\newcommand{\trueorfalse}{\linebreak \textbf{A } True ~~ \textbf{B } False}
+\newcommand{\choices}[4]{\linebreak\noindent\textbf{A } #1~~\textbf{B } #2~~\textbf{C } #3~~\textbf{D } #4}
+%\newcommand{\choicesnum}[4]{\linebreak\noindent{\fill}\textbf{A } \np{#1}~~\textbf{B } \np{#2}~~\textbf{C } \np{#3}~~\textbf{D } \np{#4}}
+%\newcommand{\twochoices}[2]{\linebreak\noindent\textbf{A } #1~~\textbf{B } #2}
+%\newcommand{\threechoices}[3]{\linebreak\noinden\textbf{A } #1~~\textbf{B } #2~~\textbf{C } #3}
+\newcommand{\choicesv}[4]{\\ \begin{minipage}{\textwidth}\vspace{4pt}\noindent\textbf{A } #1\\ \noindent\textbf{B } #2\\ \noindent\textbf{C } #3\\ \noindent\textbf{D } #4\end{minipage}}
+
+
+\newcommand{\an}{\ans{\checkmark}{}}
