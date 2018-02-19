@@ -57,7 +57,7 @@ We will compare this classifier with a decision tree classifier, $c_\text{tree}$
 
 \Tree[.{$x_2 > 1.5$?} [.{$x_1 > 0.5$?} [.{\ans{Pos}{A}} ][.{\ans{Pos}{B}} ] ][.{$x_1 > 1.5$?} [.{\ans{Neg}{C}} ][.{\ans{Pos}{D}} ] ] ]
 
-If the inequality on the node is true, move left, otherwise move right.
+If the inequality on the node is true, move right, otherwise move left.
 
 
 This tree divides the feature space into four segments (A, B, C and D). To each segment we assign the majority class in that segment (using \emph{Pos} for a draw). Label the leaves A, B, C and D with classes.
