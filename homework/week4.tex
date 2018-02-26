@@ -1,0 +1,284 @@
+\documentclass[11pt]{article}
+
+\input{preamble}
+
+%\usepackage{tikz}
+%\usepackage{tikz-qtree}
+\usepackage{qtree}
+\usepackage{xfrac}
+
+\title{Week 4: Naive Bayes, Entropy and Backpropagation}
+
+\begin{document}
+
+\maketitle
+
+\section{Naive Bayes}
+
+The following dataset represents a spam classification problem: we observe 8 emails and measure two binary features. The first is 0 if the word "pill" occurs in the e-mail and the second is 1 if the word ``meeting'' occurs. 
+
+\begin{center}
+	\begin{tabular}{c c c c}
+		 ``pill'' &``meeting'' & label\\
+		\hline
+		  1 & 0 & Spam \\
+		  1 & 0 & Spam \\
+		  0 & 1 & Spam \\
+		  1 & 0 & Spam \\
+		  0 & 0 & Ham \\
+		  0 & 0 & Ham \\
+		  0 & 1 & Ham\\
+		  1 & 1 & Ham \\
+		\hline
+	\end{tabular}
+\end{center}
+
+We will build a naive Bayes classifier for this data. What is the defining property of naive Bayes? Why is it called ``naive''?
+
+\ans{The naive Bayes classifier assumes that the features are independent, conditional on the class. It is called naive, because this assumption is usually untrue. The resulting classifier nevertheless works well in many cases.}
+
+
+We build a naive Bayes classifier on this data, as described in the lecture. We get an email that contains both words. Which class does the classifier assign?
+
+\ans{
+Call the class $Y$ and the features $X_p$ and $X_m$. The class probabilities are 
+\[
+p(Y\mid X_p, X_m) = \frac{p(X_p, X_m\mid Y)p(Y)}{p(X_p, X_m)} \p
+\]
+The class choice is 
+\[
+\argmax_Y p(Y\mid X_p, X_m) = \argmax_Y p(X_p, X_m\mid Y)p(Y) \p
+\]
+
+The naive Bayes assumption allows us to break the the probabilities up.
+
+\[
+\argmax_Y p(Y\mid X_p, X_m) = \argmax_Y p(X_p\mid Y) p(X_m\mid Y)p(Y) \p
+\]
+
+We estimate the the class prior $P(Y)$ from the data (i.e. 0.5 for each class). We estimate the likelihood of the data given the class based on the relative frequencies in the data (i.e. $p(X_p\mid Spam) = \frac{3}{4}$).
+
+This gives us:
+\begin{align*}
+p(\text{Spam}\mid X_p=1, X_m=1) &\propto p(X_p=1\mid \text{Spam})\;p(X_m=1\mid \text{Spam})\;p(\text{Spam})\\
+					 &= \frac{3}{4}\frac{1}{4}\frac{1}{2} = \frac{3}{32}\\
+p(\text{Ham}\mid X_p=1, X_m=1) &\propto p(X_p=1\mid \text{Ham})\;p(X_m=1\mid \text{Ham})\;p(\text{Ham})\\
+					 &= \frac{1}{4}\frac{2}{4}\frac{1}{2} = \frac{2}{32}\\	
+\end{align*}
+Spam gives a higher probability, so the classifier classifies the email as Spam.
+}{}
+
+Which probabilities does the classifier assign to each class?
+\ans{
+For full class probabilities, we need to apply Bayes' theorem including its denominator:
+\[
+p(Y\mid X_p, X_m) = \frac{p(X_p, X_m\mid Y)p(Y)}{p(X_p, X_m)} \p
+\]
+The denominator expands as
+\[
+p(X_p, X_m) = \sum_{Y\in \{\text{Spam}, \text{Ham}\}} p(X_p, X_m\mid Y)p(Y)
+\]
+
+These are the two unnormalized probabilities ($\frac{3}{32}$ and $\frac{2}{32}$) that we've calculated already. Computing the proper probabilities is equivalent to normalizing the unnormalized ones.Thus, the class probabilities assigned are $\frac{3}{5}$ for Spam and $\frac{2}{5}$ for Ham.
+}
+
+
+To improve our accuracy, we add another feature:
+\begin{center}
+	\begin{tabular}{c c c c}
+		``pill'' & ``meeting'' & ``hello'' & label\\
+		\hline
+		  1 & 0 & 0 & Spam \\
+		  1 & 0 & 0 & Spam \\
+		  0 & 1 & 0 & Spam \\
+		  1 & 0 & 0 & Spam \\
+		  0 & 0 & 0 & Ham \\
+		  0 & 0 & 0 & Ham \\
+		  0 & 1 & 0 & Ham\\
+		  1 & 1 & 1 & Ham \\
+		\hline
+	\end{tabular}
+\end{center}
+
+For the class Spam, there are no emails recorded that contain the word ``hello''. Why is this a problem?
+
+\ans{This makes our estimate of the probability $p(X_h=1\mid Spam)$ zero. This causes the entire class probability to collapse to 0 even if the other features make Spam very likely.}
+
+
+What solution is suggested in the slides (and in the book)?
+
+\ans{To add \emph{pseudo-observations}, so that for each feature each value is observed at least once for each class.}
+
+
+Implement this solution, and give the class probabilities for an email containing all three words.
+
+
+\ans{
+After adding the pseudo observations, our dataset looks like this:
+\begin{center}
+	\begin{tabular}{c c c c}
+		 ``pill'' & ``meeting'' & ``hello'' & label\\
+		\hline
+		  1 & 0 & 0 & Spam \\
+		  1 & 0 & 0 & Spam \\
+		  0 & 1 & 0 & Spam \\
+		  1 & 0 & 0 & Spam \\
+		  0 & 0 & 0 & Ham \\
+		  0 & 0 & 0 & Ham \\
+		  0 & 1 & 0 & Ham\\
+		  1 & 1 & 1 & Ham \\
+		  \hline
+		  1 & 1 & 1 & Spam \\
+		  0 & 0 & 0 & Spam \\
+		  1 & 1 & 1 & Ham \\
+		  0 & 0 & 0 & Ham \\
+		\hline
+	\end{tabular}
+\end{center}
+
+This gives us:
+\begin{align*}
+p(\text{Spam}\mid X_p=1, X_m=1, X_h=1) &\propto p(X_p=1\mid \text{Spam})\;p(X_m=1\mid \text{Spam})\;p(X_h=1\mid \text{Spam})\;p(\text{Spam})\\
+					 &= \frac{5}{6}\frac{2}{6}\frac{1}{6}\frac{1}{2} = \frac{10}{6^32}\\
+p(\text{Ham}\mid X_p=1, X_m=1, X_h=1) &\propto p(X_p=1\mid \text{Ham})\;p(X_m=1\mid \text{Ham})\;p(X_h=1\mid \text{Ham})\;p(\text{Ham})\\
+					 &= \frac{2}{6}\frac{3}{6}\frac{2}{6}\frac{1}{2} = \frac{12}{6^32}	
+\end{align*}
+
+Normalizing these gives us $\frac{10}{22}$ for Spam and $\frac{12}{22}$ for Ham.
+}{}
+
+\section{Entropy}
+
+We define two probability distributions $p$ and $q$ on a set of four outcomes $\{a, b, c, d\}$.
+
+\begin{center}
+	\begin{tabular}{c c c c}
+		 $p(a)$ & $p(b)$ & $p(c)$ & $p(d)$\\ 
+		\hline
+		  $\sfrac{1}{4}$ & $\sfrac{1}{4}$ & $\sfrac{1}{4}$ & $\sfrac{1}{4}$ \\
+	\end{tabular}
+\end{center}
+
+
+
+\begin{center}
+	\begin{tabular}{c c c c}
+		 $q(a)$ & $q(b)$ & $q(c)$ & $q(d)$\\ 
+		\hline
+		  $\sfrac{1}{2}$ & $\sfrac{1}{4}$ & $\sfrac{1}{8}$ & $\sfrac{1}{8}$ \\
+	\end{tabular}
+\end{center}
+
+Could you simulate sampling from these distributions using coinflips as described in the lecture?
+
+\ans{Yes. $p$ can be simulated by assigning each unique sequence of two coinflips to one of the outcomes. For $q$, we can assign the following sequences to each outcome:
+
+\begin{center}
+	\begin{tabular}{c c c c}
+		 $q(a)$ & $q(b)$ & $q(c)$ & $q(d)$\\ 
+		\hline
+		  $H$ & $TH$ & $TTH$ & $TTT$ \\
+	\end{tabular}
+\end{center}
+}
+
+Compute the entropy of $p$ and $q$.
+
+\ans{
+\begin{align*}
+H(p) &= - \sum_{y \in \{a, b, c, d\}} p(y) \log_2 p(y)  \\
+&= - 4(\frac{1}{4} \log \frac{1}{4}) = - \log 4{-1} = \log 4 = 2\
+\end{align*}
+
+\begin{align*}
+H(q) &= - \sum_{y \in \{a, b, c, d\}} q(y) \log_2 q(y)  \\
+&= - \frac{1}{2} \log \frac{1}{2} -  \frac{1}{4} \log \frac{1}{4} - \frac{1}{8} \log \frac{1}{8}  \frac{1}{8} \log \frac{1}{8}\\
+&= \frac{1}{2} + \frac{2}{4} + \frac{2}{4} + \frac{3}{8} = \frac{4}{8} + \frac{4}{8} + \frac{4}{8} + \frac{3}{8} = 1.75
+\end{align*}
+}
+
+The entropy of $q$ is lower than the entropy of $p$. What does this tell you about the difference between the two distributions?
+
+\ans{This means that $p$ is more uniform than $q$. In other words, we have more \emph{information} about what the outcome of a sample from $q$ will be than we do about the outcome of a sample from $p$.}
+
+
+In the definition of entropy that we use (information entropy), the logarithms have base 2 (i.e. $\log_2$ instead of $\log_{10}$ or $\ln$). Why is this?
+
+
+\ans{The logarithm is defined as the expected code length under an idealized optimal binary code. If a binary code assigns a codeword of length of $L$ to an outcome, the probability of sampling that outcome by generating a random code by flipping a coin is $\left (\frac{1}{2}\right)^L = 2^-L$. If we reverse this, to find the optimal code belonging to an event with probability $p(x)$, we get $L = -\log_2p(x)$}{}
+
+\section{Backpropagation}
+
+
+We will practice the backpropagation algorithm as described in the slides. We will use a neural network defined by the following function:
+\begin{align*}
+y &= v_1h_1 + v_2h2 \\
+h_1 &= \sigma(k_1) \\
+h_2 &= \sigma(k_2) \\
+k_1 &= w_1x \\
+k_2 &= w_2x 
+\end{align*}
+
+Where $\sigma$ represents the logistic sigmoid. The network has a single input node $x$ and a single output node $y$. The weights are $w_1$, $w_2$, $v_1$ and $v_2$. Draw this network. 
+
+
+
+We will use stochastic gradient descent to train this network. That means we define the loss function for a single example. We will use basic least-squares loss to train this network for regression. Our loss function for example $x$ is
+\[
+\text{loss}_x(w_1, w_2, v_1, v_2) = \frac{1}{2}\left(t - y\right)
+\]
+
+where $t$ is the target value provided by the dataset, and $y$ is the output of the network.
+
+We see each line in the definition above as a module, with some inputs and some outputs. Using the chain rule, we will express the derivative with respect to weight $w_1$. We will use only \emph{local derivatives}, expressing the derivative for each module with respect to its inputs, but not working out the derivative beyond that.
+
+Fill in the gaps:
+\begin{align}
+\frac{\kp \text{loss}}{\kp w_1}
+ &= \frac{\kp \text{loss}}{\kp y}\frac{\kp y}{\kp h_1} \ans{\frac{\kp h_1}{\kp k_1} }{\ldots}\frac{\kp k_1}{\kp w_1} \notag \\
+ &= (t - y) \times \ans{v_1}{\ldots} \times \sigma(k_1)\sigma(-k_1) \times \ans{x}{\ldots} \label{line:chain}
+\end{align}
+
+The network has a diamond shape, just as shown in the slide when explaining the multivariate chain rule (slide 41). However, in this case, we don't need the multivariate chain rule. Why not? In what kind of situation would the multivariate chain rule be required?
+
+\ans{The multivariate chain rule is needed when the output depends on one of the variables for which we are taking the derivative (like $w_1$). In this case we have a diamond because $y$ depends on $x$ along two paths, but we never take the derivative with respect  to $x$ (the input), only with respect to the weights.
+
+In a way, we \emph{are} using the multivariate chain rule, if we write 
+\[
+\frac{\kp l}{\kp w_1} = \frac{\kp v_1h_1}{\kp w_1} + \frac{\kp v_2h_2}{\kp w_1}
+\]
+but the second term becomes zero because the numerator is constant with respect to $w_1$.
+
+
+The multivariate chain rule comes into effect when the output depends on a \emph{weight} along multiple paths in the computation graph. This happens, for instance, when we compute the loss function over a batch of multiple data points. }{}
+
+We could take the formulation above and fill in the symbolic expressions for $y$, $k_1$, etc, and come up with a general symbolic formula for the derivative for all inputs. However, that is usually expensive to do for large neural nets. Instead, we leave it as is, and fill in the \emph{numeric} values for these variables for a specific input and for specific weights. 
+
+Assume that the input is $x = 1$, with target output $t=\frac{1}{2}$ and that all weights are set at $1$. Do a \emph{forward pass}: compute the loss and all intermediate values $k_1$, $k_2$, $h_1$, $h_2$ and $y$.
+
+\ans{
+\begin{align*}
+k_1 &= 1 \\
+k_2 &= 1 \\
+h_1 &= \sfrac{3}{4} \\
+h_2 &= \sfrac{3}{4} \\	
+y &= \sfrac{3}{2} \\
+\text{loss} &= 1 \\
+\end{align*}
+}{}
+
+Now we do the \emph{backward pass}. Fill these intermediate values in to the loss function decomposed by the chain rule  from line \ref{line:chain}, and compute the derivative with respect to $w_1$ for these inputs and weights.
+
+To simplify calculation, you can use the approximation $\sigma(1) = \frac{3}{4}$.
+
+\ans{
+\begin{align*}
+\frac{\kp \text{loss}}{\kp w_1} = -1 \times 1 \times \frac{3}{4}\frac{1}{4} \times 1 = \frac{3}{16}
+\end{align*}
+}{}
+
+
+
+
+
+\end{document}
