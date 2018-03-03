@@ -34,8 +34,8 @@ The basic optimization objective for support vector machines is
 \ans{$y_i$ is 1 for positive examples, and -1 for negative examples. It allows us to rewrite the constraints
 
 \begin{align*}
-\bw^T\x_i + b \geq 1 &\text{if $\x_i$ is positive} \\	
-\bw^T\x_i + b \leq -1 &\text{if $\x_i$ is negative} \\
+\bw^T\x_i + b \geq 1 &\;\text{if $\x_i$ is positive} \\	
+\bw^T\x_i + b \leq -1 &\;\text{if $\x_i$ is negative} \\
 \end{align*}
 
 to a single constraint.
@@ -52,15 +52,13 @@ The second option is to use Lagrange multipliers to get rid of $\bw$ and rewrite
 The main benefit is that the whole algorithm can be written in terms of the dot products of pairs of instances. This means we do not need to see the actual feature vectors to compute the support vectors, only the dot products. This allows us to apply the \emph{kernel trick}.
 }{}
 
-
-
 \subsection{Lagrange multipliers} 
 
-Lagrange multipliers are a useful trick to know. We'll practice them briefly on a small problem, so you get the principle. We will only use an equality constraint. For inequality constraints, the details get a little more complex.
+Lagrange multipliers are a useful trick to know. We'll practice them briefly on a small problem, so that you understand the principle. We will only use an \emph{equality} constraint. 
 
-He have the following optimization problem:
+If we would use an inequality constraint, the process would slightly change (this is shown in the slides and discussed in the book). We have the following optimization problem:
 \begin{align*}
-\text{minize} &\;f(a, b) = a^2 + 2b^2 + a + b\\
+\text{minize} &\;f(a, b) = a^2 + 2b^2 \\
 \text{such that} &\;a^2 = - b^2 + 1
 \end{align*}
 
@@ -78,13 +76,13 @@ We now define a function $L(a, b, \lambda) = f(a, b) + \lambda G$, where $G$ is 
 
 \qu Write out $L(a, b, \lambda)$ for our problem.
 
-\footnotetext{For plain Lagrange multipliers, where the constraints are all equalities, we can add or subtract the term containing the constraint.}
+\footnotetext{For plain Lagrange multipliers, where the constraints are all equalities, we can either add or subtract the term containing the constraint. For inequality constrains, it depends on whether we are maximizing or minimizing.}
 
 \ans{$L(a, b, \lambda) = a^2 + 2b^2 + \lambda(a^2 + b^2 - 1) $}{}
 
-We take the derivative of $L$ with respect to each of its \emph{three} parameters. And set these equal to zero. 
+We take the derivative of $L$ with respect to each of its \emph{three} parameters, and set these equal to zero. 
 
-\qu Fill in the blanks.
+\qu Fill in the blanks
 \ans{
 \begin{align*}
 \frac{\kp L}{\kp a} &= \frac{\kp(a^2 + 2b^2 + \lambda a^2 + \lambda b^2 - \lambda)}{\kp a} \\
@@ -92,30 +90,29 @@ We take the derivative of $L$ with respect to each of its \emph{three} parameter
  	\frac{\kp L}{\kp b} &= 4b + 2 \lambda b \\
  	\frac{\kp L}{\kp \lambda} &= a^2 + b^2 - 1 
 \end{align*}
-}
+}{}
 
-We set these equal to zero. 
-
-\qu Fill in the blanks
 \begin{align}
 a (\ans{2+2\lambda}{\ldots})&= 0\\
 b (\ans{4 + 2\lambda}{\ldots})&= 0 \\
 a^2 + b^2 &= 1 \label{line:constraint}
 \end{align}
 
-Note that the last line recovers the original constraint. We now have three equation with three unknowns, so we can solve for $a$ and $b$. From the shape of the function (it's symmetric in both the $a$ and $b$ axes), we should expect at least two solutions. We can get these from the above equations by noting that if $a$ and $b$ are both nonzero, their multipliers are both zero, which leads to a contradiction. Thus either $a$ or $b$ must be zero.
+Note that the last line recovers the original constraint. We now have three equations with three unknowns, so we can solve for $a$ and $b$. From the shape of the function (it's symmetric in both the $a$ and $b$ axes), we should expect at least two solutions. 
 
-\qu Give the solutions for both cases.
+We can get these from the above equations by noting that if $a$ and $b$ are both nonzero, we can derive a contradiction. Thus either $a$ or $b$ must be zero.
+
+\qu Give the solutions for both cases (remember that $x^2 =1$ has \emph{two} solutions).
 
 \ans{
-The solutions follow directly from (\ref{line:constraint}), above. If $a =0$, then $b^2=1$ and vice versa. This gives us
+From line (\ref{line:constraint}), above we see that if $a =0$, then $b^2=1$ and vice versa. This gives us
 \begin{align*}
-a = 0, b = 1	
-a = 0, b = -1
-a = 1, b = 0	
-a = -1, b = 0
+a = 0&, b = 1\\	
+a = 0&, b = -1\\
+a = 1&, b = 0\\
+a = -1&, b = 0\\
 \end{align*}
-As extrema. Filling these in, we find that the last two lines minimize the function. (The first two are maxima, as can be seen by clicking the Wolfram Alpha link below.
+as extrema. Filling these in, we find that the last two lines minimize the function. (The first two are maxima, as can be seen by clicking the Wolfram Alpha link below.
 }{}
 
 Happily, \href{https://goo.gl/Uaz5mg}{Wolfram Alpha} agrees with us (and provides some informative plots).
@@ -140,7 +137,7 @@ k(\ba, \bb) = {\ba'}^T\bb' \p
 
 Starting from the definition of $k$:
 \begin{align*}
-k(\ba, \bb) &= \left( \ma{a_1\\ a_2}^T\ma{b_1\\ b2} \right)^2\\
+k(\ba, \bb) &= \left( \ma{a_1\\ a_2}^T\ma{b_1\\ b_2} \right)^2\\
  &= \left ( a_1 b_1 + a_2 b_2 \right)^2 \\
  &= a_1 b_1 a_1 b_1 + 2 a_2 b_2 a_1 b_1 + a_2 b_2 a_2 b_2 \\
  &= a_ 1a_1\cdot b_1 b_1 + 2 \cdot a_1 a_2 \cdot b_1 b_2 + a_2a_2\cdot b_2b_2\\
@@ -171,7 +168,7 @@ Assume we have a Gaussian Mixture Model in one dimension with two components: $N
 \begin{align*}
 p(0) &= \frac{1}{2} N(0, 1) + \frac{1}{2} N(1,1)\\
  &= \frac{1}{2\sqrt{2\pi}} \exp(0) + \frac{1}{2\sqrt{2\pi}} \exp\left(-\frac{1}{2}\right) \\
- &= \frac{1}{\sqrt{8\pi e}} \approx 0.12
+ &= \frac{1}{2}\frac{1}{\sqrt{2 \pi}} + \frac{1}{2}\frac{1}{\sqrt{2 \pi e}} \approx 0.32
 \end{align*}
 }{}
 
@@ -184,11 +181,11 @@ To compute the responsibility, we compute the probability of the component $z$ g
 
 We get for component 1:
 \[
-\frac{\frac{1}{2\sqrt{2\pi}} \exp(0)}{\frac{1}{2\sqrt{2\pi}} \exp(0) + \frac{1}{2\sqrt{2\pi}} \exp\left(-\frac{1}{2}\right)} = \frac{1}{1 + \frac{1}{\sqrt{e}}}
+\frac{\frac{1}{2\sqrt{2\pi}} \exp(0)}{\frac{1}{2\sqrt{2\pi}} \exp(0) + \frac{1}{2\sqrt{2\pi}} \exp\left(-\frac{1}{2}\right)} = \frac{1}{1 + \frac{1}{\sqrt{e}}} \approx 0.62
 \]
 and for component 2: 
 \[
-\frac{\frac{1}{2\sqrt{2\pi}} \exp\left(-\frac{1}{2}\right)}{\frac{1}{2\sqrt{2\pi}} \exp(0) + \frac{1}{2\sqrt{2\pi}} \exp\left(-\frac{1}{2}\right)} = \frac{\frac{1}{\sqrt{e}}}{1 + \frac{1}{\sqrt{e}}}
+\frac{\frac{1}{2\sqrt{2\pi}} \exp\left(-\frac{1}{2}\right)}{\frac{1}{2\sqrt{2\pi}} \exp(0) + \frac{1}{2\sqrt{2\pi}} \exp\left(-\frac{1}{2}\right)} = \frac{\frac{1}{\sqrt{e}}}{1 + \frac{1}{\sqrt{e}}} \approx 0.37
 \]
 }{}
 
