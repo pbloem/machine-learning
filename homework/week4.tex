@@ -102,7 +102,7 @@ To improve our accuracy, we add another feature:
 
 For the class Spam, there are no emails recorded that contain the word ``hello''. Why is this a problem?
 
-\ans{This makes our estimate of the probability $p(X_h=1\mid Spam)$ zero. This causes the entire class probability to collapse to 0 even if the other features make Spam very likely.}
+\ans{This makes our estimate of the probability $p(X_h=1\mid \text{Spam})$ zero. This causes the entire class probability to collapse to 0 even if the other features make Spam very likely.}
 
 
 What solution is suggested in the slides (and in the book)?
@@ -139,12 +139,12 @@ After adding the pseudo observations, our dataset looks like this:
 This gives us:
 \begin{align*}
 p(\text{Spam}\mid X_p=1, X_m=1, X_h=1) &\propto p(X_p=1\mid \text{Spam})\;p(X_m=1\mid \text{Spam})\;p(X_h=1\mid \text{Spam})\;p(\text{Spam})\\
-					 &= \frac{5}{6}\frac{2}{6}\frac{1}{6}\frac{1}{2} = \frac{10}{6^32}\\
+					 &= \frac{4}{6}\frac{2}{6}\frac{1}{6}\frac{1}{2} = \frac{8}{6^32}\\
 p(\text{Ham}\mid X_p=1, X_m=1, X_h=1) &\propto p(X_p=1\mid \text{Ham})\;p(X_m=1\mid \text{Ham})\;p(X_h=1\mid \text{Ham})\;p(\text{Ham})\\
 					 &= \frac{2}{6}\frac{3}{6}\frac{2}{6}\frac{1}{2} = \frac{12}{6^32}	
 \end{align*}
 
-Normalizing these gives us $\frac{10}{22}$ for Spam and $\frac{12}{22}$ for Ham.
+Normalizing these gives us $\frac{2}{5}$ for Spam and $\frac{3}{5}$ for Ham.
 }{}
 
 \section{Entropy}
@@ -187,13 +187,13 @@ Compute the entropy of $p$ and $q$.
 \ans{
 \begin{align*}
 H(p) &= - \sum_{y \in \{a, b, c, d\}} p(y) \log_2 p(y)  \\
-&= - 4(\frac{1}{4} \log \frac{1}{4}) = - \log 4{-1} = \log 4 = 2\
+&= - 4(\frac{1}{4} \log \frac{1}{4}) = - \log 4\times -1 = \log 4 = 2\
 \end{align*}
 
 \begin{align*}
 H(q) &= - \sum_{y \in \{a, b, c, d\}} q(y) \log_2 q(y)  \\
-&= - \frac{1}{2} \log \frac{1}{2} -  \frac{1}{4} \log \frac{1}{4} - \frac{1}{8} \log \frac{1}{8}  \frac{1}{8} \log \frac{1}{8}\\
-&= \frac{1}{2} + \frac{2}{4} + \frac{2}{4} + \frac{3}{8} = \frac{4}{8} + \frac{4}{8} + \frac{4}{8} + \frac{3}{8} = 1.75
+&= - \frac{1}{2} \log \frac{1}{2} -  \frac{1}{4} \log \frac{1}{4} - \frac{1}{8} \log \frac{1}{8} - \frac{1}{8} \log \frac{1}{8}\\
+&= \frac{1}{2} + \frac{2}{4} + \frac{3}{8} + \frac{3}{8} = \frac{4}{8} + \frac{4}{8} + \frac{3}{8} + \frac{3}{8} = 1.75
 \end{align*}
 }
 
@@ -225,7 +225,7 @@ Where $\sigma$ represents the logistic sigmoid. The network has a single input n
 
 We will use stochastic gradient descent to train this network. That means we define the loss function for a single example. We will use basic least-squares loss to train this network for regression. Our loss function for example $x$ is
 \[
-\text{loss}_x(w_1, w_2, v_1, v_2) = \frac{1}{2}\left(t - y\right)
+\text{loss}_x(w_1, w_2, v_1, v_2) = \frac{1}{2}\left(t - y\right)^2
 \]
 
 where $t$ is the target value provided by the dataset, and $y$ is the output of the network.
@@ -256,6 +256,8 @@ We could take the formulation above and fill in the symbolic expressions for $y$
 
 Assume that the input is $x = 1$, with target output $t=\frac{1}{2}$ and that all weights are set at $1$. Do a \emph{forward pass}: compute the loss and all intermediate values $k_1$, $k_2$, $h_1$, $h_2$ and $y$.
 
+To simplify calculation, you can use the approximation $\sigma(1) = \frac{3}{4}$.
+
 \ans{
 \begin{align*}
 k_1 &= 1 \\
@@ -263,17 +265,17 @@ k_2 &= 1 \\
 h_1 &= \sfrac{3}{4} \\
 h_2 &= \sfrac{3}{4} \\	
 y &= \sfrac{3}{2} \\
-\text{loss} &= 1 \\
+\text{loss} &= \frac{1}{2} \\
 \end{align*}
 }{}
 
 Now we do the \emph{backward pass}. Fill these intermediate values in to the loss function decomposed by the chain rule  from line \ref{line:chain}, and compute the derivative with respect to $w_1$ for these inputs and weights.
 
-To simplify calculation, you can use the approximation $\sigma(1) = \frac{3}{4}$.
+
 
 \ans{
 \begin{align*}
-\frac{\kp \text{loss}}{\kp w_1} = -1 \times 1 \times \frac{3}{4}\frac{1}{4} \times 1 = \frac{3}{16}
+\frac{\kp \text{loss}}{\kp w_1} = -1 \times 1 \times \frac{3}{4}\frac{1}{4} \times 1 = - \frac{3}{16}
 \end{align*}
 }{}
 

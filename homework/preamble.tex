@@ -13,8 +13,7 @@
 \usepackage{enumitem}
 \usepackage{bm}
 
-
-\newcommand{\p}{\text{\,.}}
+\newcommand{\p}{\;\text{.}}
 
 \newcommand{\R}{{\mathbb R}}
 \newcommand{\N}{{\mathbb N}}
@@ -25,6 +24,9 @@
 \newcommand{\A}{{\bm A}}
 \newcommand{\B}{{\bm B}}
 \newcommand{\C}{{\bm C}}
+\newcommand{\ba}{{\bm a}}
+\newcommand{\bb}{{\bm b}}
+\newcommand{\boc}{{\bm c}}
 \newcommand{\bu}{{\bm u}}
 \newcommand{\bv}{{\bm v}}
 \newcommand{\bw}{{\bm w}}
@@ -37,8 +39,11 @@
 \newcommand{\bt}{{\bm t}}
 \newcommand{\ma}[1]{\begin{pmatrix}#1\end{pmatrix}}
 
-%\newcommand{\ans}[2]{{\leavevmode\color{OliveGreen}#2}} % no answers
-\newcommand{\ans}[2]{{\leavevmode\color{OliveGreen}#1}} % answers
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\newcommand{\ans}[2]{{\leavevmode\color{OliveGreen}#2}} % no answers
+% \newcommand{\ans}[2]{{\leavevmode\color{OliveGreen}#1}} % answers
 
 \newcommand{\red}[1]{{\textcolor{Red}{#1}}}
 
@@ -56,6 +61,12 @@
 %\newcommand{\twochoices}[2]{\linebreak\noindent\textbf{A } #1~~\textbf{B } #2}
 %\newcommand{\threechoices}[3]{\linebreak\noinden\textbf{A } #1~~\textbf{B } #2~~\textbf{C } #3}
 \newcommand{\choicesv}[4]{\\ \begin{minipage}{\textwidth}\vspace{4pt}\noindent\textbf{A } #1\\ \noindent\textbf{B } #2\\ \noindent\textbf{C } #3\\ \noindent\textbf{D } #4\end{minipage}}
+
+% Homework questions
+\newcommand{\qu}[0]{%
+  \addtocounter{Question}{1}%
+  \noindent \textbf{question \theQuestion:}
+}
 
 
 \newcommand{\an}{\ans{\checkmark}{}}

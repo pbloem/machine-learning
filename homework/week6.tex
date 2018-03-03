@@ -1,0 +1,140 @@
+\documentclass[11pt]{article}
+
+\input{preamble}
+
+%\usepackage{tikz}
+%\usepackage{tikz-qtree}
+\usepackage{qtree}
+\usepackage{xfrac}
+
+\title{Week 6: Decision Trees and Ensembles}
+
+\begin{document}
+
+\maketitle
+
+\section{Decision trees}
+
+Imagine you do a newspaper round to help you get through these lean times.  On your round, you encounter a number of dogs that either bark or (try to) bite. The dogs are described by the following binary features: \emph{Heavy}, \emph{Smelly}, \emph{Big} and \emph{Growling}. Consider the following set of examples:
+
+\begin{center}
+\begin{tabular}{c  c  c  c  | c }
+Heavy & Smelly &  Big & Growling & Bites \\
+\hline
+No & No & No & No & No \\
+No & No & Yes & No & No \\
+Yes & Yes & No & Yes & No \\
+Yes & No & No & Yes & Yes \\
+No & Yes & Yes & No & Yes \\
+No & No & Yes & Yes & Yes \\
+No & No & No & Yes & Yes \\
+Yes & Yes & No & No & Yes \\
+\hline
+\end{tabular}
+\end{center}
+
+
+What is the entropy of the target value \emph{Bites} in the data?
+\ans{
+\[H(Bites)= − \sfrac{5}{8}\log_2\sfrac{5}{8} - \sfrac{3}{8}\log_2\sfrac{3}{8} \approx 0.9544\]
+}{}
+
+
+Which attribute would the ID3 algorithm choose to use for the root of the tree, if we turn off pruning? Hint: you can figure this out by looking at the data without explicitly calculating the information gain for each of the attributes.
+\ans{Growling}
+
+
+What is the information gain of the attribute you chose in the previous question?
+\ans{approximately 0.0487}{}
+
+
+Draw the full decision tree that would be learned for this data using ID3 without pruning.
+
+\ans{
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\linewidth]{Tree}
+\caption{Decision tree}
+\end{figure}
+}{}
+
+
+Suppose three new dogs appear in your round as listed in the table be-
+low. Classify them using the decision tree from the previous question.
+
+\begin{center}
+\begin{tabular}{c c c c c | c }
+Dog & Heavy & Smelly &  Big & Growling & Bites \\
+\hline
+Buster & Yes & Yes & Yes & Yes & \ans{No}{?} \\
+Pluto & No & Yes & No & Yes & \ans{No}{?} \\
+Zeus & Yes & Yes & No & No & \ans{Yes}{?} \\
+\hline
+\end{tabular}
+\end{center}
+
+The standard ID3 algorithm does not specify what to do if all features have zero (0.0) information gain. How would you proceed in this case? Why?
+
+\ans{
+As noted in the lecture, stopping in this case causes problems with XOR-like datasets. To avoid this, you should proceed with a split, the actual choice of attribute is not important as long as you don’t stop: even picking a random split is fine.
+}{}
+
+Someone proposes a new scheme to prevent overfitting: she suggests to set a pre-defined maximum depth for the decision trees. When the standard algorithm reaches this depth, it terminates. Could this help to prevent overfitting? Why (not)?
+\ans{
+It ensures smaller, simpler trees – a smaller hypothesis space and therefore can reduce the risk of overfitting. Overfitting is essentially memorizing too much of your data. Smaller trees can memorize less.
+}{}
+
+In the maximum depth scheme introduced above, how would you determine a good value for the maximum depth for a given data set?
+
+\ans{
+The maximum depth is a \emph{hyperparameter}. We can choose good values for our hyperparameters by splitting our training data into a validation set and trying different values (either by cross validation or just single runs).}{}
+
+\section{Ensembles}
+
+
+You are working with a considerably noisy dataset, in which classifiers
+tend to overfit on the training data. Which ensemble method would
+you propose to alleviate this problem? Why?
+
+\ans{Bagging. Training a high number of classifiers on different samples of
+the training data each time means the noisy data instances will be less
+likely to be featured across datasets than instances correctly displaying
+the problem’s features. Some classifiers may overfit, but their collective
+vote is likely to downplay the votes of overfit classifiers.}{}
+
+You want to use AdaBoost to improve the performance of classification
+of your dataset. You are going to use a Neural Network as the base
+learner.  How big (in number of hidden layers and neurons) should
+your neural network be? Why?
+
+\ans{We'd want a very small NN. Boosting works best with weak learners
+that focus at each step on the most salient features of the data currently
+under consideration, leaving the learning of the remaining features to
+other iterations.}{}
+
+When combining multiple learners, it is preferable to find a set of diverse learners that differ in their decisions, so that they complement each other. Taking as an example a classification task, list and explain at least two different approaches you can follow to obtain diverse classifiers from your dataset.
+
+\ans
+Diverse learners can be trained over the same data by using different algorithms (e.g., neural networks, naive Bayes classifiers, ...), or if using the same algorithm, by tuning it in different ways (such as by setting a different number of hidden layer neurons in the neural network.  
+
+Additionally, instead of training learners over a dataset's complete set of input features, a partitioning of the input features can be used, to train different learners over the different subsets (e.g., a neural network handling a data instance’s continuous variables, while a C4.5 decision tree handles the categorical variables). 
+
+Another possibility is to train the different base-learners over different subsets of the training set (which is the approach followed by bagging and boosting). 
+
+Consider a system with multiple sensors producing different kinds of data for each event it logs: a photo, a sound file, as well as numerical values of temperature, pressure and humidity. You want to train a classifier that will tell you for future logged events whether it is raining or not. 
+
+By itself, no single kind of data will give you a classifier that is accurate enough, but also no single learner at your disposal will enable you to consider all of an event's input data together. Name
+two methods to combine the outputs from different classifiers working in parallel over the different kinds of data and explain briefly how they work.
+
+\ans{Possible approaches to aggregate the decisions of multiple classifiers include voting/averaging and stacking.}
+
+You are working with a dataset where you get comparable classification accuracies from both a decision tree inducer and a K-nearest neighbours classifier. Given that there’s a fair amount of noise in the data, you then consider using Bagging to improve your classification.
+
+Which of the two classifiers would you expect to benefit the most from Bagging? Motivate your answer.
+
+\ans{The decision tree inducer would benefit the most. Bagging works best with unstable algorithms, as they generate the most diverse learners from the different training sets given to them by Bagging.  
+
+Furthermore, decision tree inducers can easily be parametrized to make them even more unstable (for instance, by switching pruning off), and thus of even greater benefit in such a setup}{}
+
+\end{document}

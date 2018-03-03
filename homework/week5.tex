@@ -1,0 +1,195 @@
+\documentclass[11pt]{article}
+
+\input{preamble}
+
+%\usepackage{tikz}
+%\usepackage{tikz-qtree}
+\usepackage{qtree}
+\usepackage{xfrac}
+
+\title{Week 5: Support Vector Machines and Expectation-Maximization}
+
+\begin{document}
+
+\maketitle
+
+\section{Support Vector Machines}
+
+\subsection{Support Vector Loss}
+
+The basic optimization objective for support vector machines is 
+\begin{align*}
+\text{minimize}\;\;&\frac{1}{2}||\bw|| + C\sum_i p_i\\
+\text{such that}\;\;&y_i(\bw^T\x_i + b) - 1 \geq 0\\
+\text{and} \;\;&p_i \geq 0
+\end{align*}
+
+\qu What does the $i$ iterate over? How many terms does the sum have, and how many constraints are there?
+
+\ans{It iterates over the data. There are as many terms and constraints as there are instances in the data.}{}
+
+
+\qu What is the value of $y_i$ in this expression? What is its function?
+
+\ans{$y_i$ is 1 for positive examples, and -1 for negative examples. It allows us to rewrite the constraints
+
+\begin{align*}
+\bw^T\x_i + b \geq 1 &\text{if $\x_i$ is positive} \\	
+\bw^T\x_i + b \leq -1 &\text{if $\x_i$ is negative} \\
+\end{align*}
+
+to a single constraint.
+}{}
+
+
+
+\qu There are two common ways to rewrite this expression before implementing it. What are they (in general terms) and what are their benefits?
+
+\ans{The first option is to rewrite everything in terms of $\bw$ and $b$ in order to get rid of the constraints. This is useful when we want to use the SVM as the last layer in a neural network. Without constraints, we are free to use basic backpropagation.
+
+The second option is to use Lagrange multipliers to get rid of $\bw$ and rewrite everything in terms of the multipliers. This exresses the solution purely in terms of the support vectors.
+
+The main benefit is that the whole algorithm can be written in terms of the dot products of pairs of instances. This means we do not need to see the actual feature vectors to compute the support vectors, only the dot products. This allows us to apply the \emph{kernel trick}.
+}{}
+
+
+
+\subsection{Lagrange multipliers} 
+
+Lagrange multipliers are a useful trick to know. We'll practice them briefly on a small problem, so you get the principle. We will only use an equality constraint. For inequality constraints, the details get a little more complex.
+
+He have the following optimization problem:
+\begin{align*}
+\text{minize} &\;f(a, b) = a^2 + 2b^2 + a + b\\
+\text{such that} &\;a^2 = - b^2 + 1
+\end{align*}
+
+\qu The first step is to rewrite the constraint so that the right side is equal to zero. Do so.
+
+
+\ans{$a^2 + b^b - 1 = 0$}{}
+
+\qu What does the constraint say about the allowed inputs (what shape do the allowed inputs make in the $(a, b)$-plane)?
+
+
+\ans{The solutions are constrained to a circle, centered on the origin, with radius 1 (a so-called bi-unit circle).}{}
+
+We now define a function $L(a, b, \lambda) = f(a, b) + \lambda G$, where $G$ is the left side of the constraint equal to zero (how much any given $a$ and $b$ violate the constraint).\footnotemark 
+
+\qu Write out $L(a, b, \lambda)$ for our problem.
+
+\footnotetext{For plain Lagrange multipliers, where the constraints are all equalities, we can add or subtract the term containing the constraint.}
+
+\ans{$L(a, b, \lambda) = a^2 + 2b^2 + \lambda(a^2 + b^2 - 1) $}{}
+
+We take the derivative of $L$ with respect to each of its \emph{three} parameters. And set these equal to zero. 
+
+\qu Fill in the blanks.
+\ans{
+\begin{align*}
+\frac{\kp L}{\kp a} &= \frac{\kp(a^2 + 2b^2 + \lambda a^2 + \lambda b^2 - \lambda)}{\kp a} \\
+&= 2a + 2\lambda a \\
+ 	\frac{\kp L}{\kp b} &= 4b + 2 \lambda b \\
+ 	\frac{\kp L}{\kp \lambda} &= a^2 + b^2 - 1 
+\end{align*}
+}
+
+We set these equal to zero. 
+
+\qu Fill in the blanks
+\begin{align}
+a (\ans{2+2\lambda}{\ldots})&= 0\\
+b (\ans{4 + 2\lambda}{\ldots})&= 0 \\
+a^2 + b^2 &= 1 \label{line:constraint}
+\end{align}
+
+Note that the last line recovers the original constraint. We now have three equation with three unknowns, so we can solve for $a$ and $b$. From the shape of the function (it's symmetric in both the $a$ and $b$ axes), we should expect at least two solutions. We can get these from the above equations by noting that if $a$ and $b$ are both nonzero, their multipliers are both zero, which leads to a contradiction. Thus either $a$ or $b$ must be zero.
+
+\qu Give the solutions for both cases.
+
+\ans{
+The solutions follow directly from (\ref{line:constraint}), above. If $a =0$, then $b^2=1$ and vice versa. This gives us
+\begin{align*}
+a = 0, b = 1	
+a = 0, b = -1
+a = 1, b = 0	
+a = -1, b = 0
+\end{align*}
+As extrema. Filling these in, we find that the last two lines minimize the function. (The first two are maxima, as can be seen by clicking the Wolfram Alpha link below.
+}{}
+
+Happily, \href{https://goo.gl/Uaz5mg}{Wolfram Alpha} agrees with us (and provides some informative plots).
+
+
+\subsection{The kernel trick}
+
+We have a dataset with two features Let $\bm{a} = \ma{a_1\\ a_2}$ and $\bm{b} = \ma{b_1\\ b_2}$. We define the \emph{kernel}
+\[
+k_1(\bm{a}, \bm{b}) = (\bm{a}^T\bm{b})^2 \p
+\]
+
+\qu Show that the \emph{feature space} defined by this kernel is 
+\[ 
+\ma{{x_1}^2\\\sqrt{2}x_1x_2\\{x_2}^2}\p
+\]
+\ans{
+The feature space of $k$ is a projection of point $\ba$ to point $\ba'$ such that 
+\[
+k(\ba, \bb) = {\ba'}^T\bb' \p
+\]
+
+Starting from the definition of $k$:
+\begin{align*}
+k(\ba, \bb) &= \left( \ma{a_1\\ a_2}^T\ma{b_1\\ b2} \right)^2\\
+ &= \left ( a_1 b_1 + a_2 b_2 \right)^2 \\
+ &= a_1 b_1 a_1 b_1 + 2 a_2 b_2 a_1 b_1 + a_2 b_2 a_2 b_2 \\
+ &= a_ 1a_1\cdot b_1 b_1 + 2 \cdot a_1 a_2 \cdot b_1 b_2 + a_2a_2\cdot b_2b_2\\
+ &= \ma{a_1a_1\\ \sqrt{2}a_1a_2\\a_2a_2} ^T \ma{b_1b_1\\ \sqrt{2}b_1b_2\\b_2b_2}
+\end{align*}
+}{}
+
+
+\qu What is the feature space for the kernel
+\[
+k'(\ba, \bb) = (\ba^T\bb +1)^2\;\;\;\text{?}
+\]
+\ans{
+\begin{align*}
+k(\ba, \bb) &= \left( \ma{a_1\\ a_2}^T\ma{b_1\\ b2} + 1\right)^2\\
+ &= (a_1 b_1 + a_2 b_2)^2 +  2( a_1 b_1 + a_2 b_2) + 1 \\
+ &= a_1b_1a_1b_1 + 2a_1b_1a_2b_2 + a_2b_2a_2b_2 + 2a_1b_1 + 2a_2b_2 + 1\\
+ &= \ma{1 \\ \sqrt{2}a_1 \\ {a_1}^2\\\sqrt{2}a_1a_2 \\{a_2}^2} ^T\ma{1 \\ \sqrt{2}b_1 \\ {b_1}^2\\\sqrt{2}b_1b_2 \\{b_2}^2} 
+\end{align*}
+}{}
+
+\section{Expectation Maximization}
+
+Assume we have a Gaussian Mixture Model in one dimension with two components: $N(0, 1)$ and $N(1,1)$. The weights $w_1$ and $w_2$ of the components are equal. 
+
+\qu What is the probability density of the point 0, under the Gaussian Mixture?
+\ans{
+\begin{align*}
+p(0) &= \frac{1}{2} N(0, 1) + \frac{1}{2} N(1,1)\\
+ &= \frac{1}{2\sqrt{2\pi}} \exp(0) + \frac{1}{2\sqrt{2\pi}} \exp\left(-\frac{1}{2}\right) \\
+ &= \frac{1}{\sqrt{8\pi e}} \approx 0.12
+\end{align*}
+}{}
+
+\qu Under the EM algorithm, what responsibility is assigned to each component for the point 0?
+
+\ans{
+To compute the responsibility, we compute the probability of the component $z$ given the point $x$: $p(z\mid x)$, and normalize over all components. Using Bayes' rule, this translates to $p(z\mid x) = \frac{p(x\mid z)p(z)}{p(x)}$. The denominator is the sum we've just computed, and the responsibilities are the proportions of each term to the total.\footnotemark
+
+\footnotetext{This is no accident, it is essentially what Bayes' rule tells us: to compute $p(z\mid x)$, we find $p(x)$ by marginalizing $Z$ out of $p(X=x, Z)$. This gives us a big sum, with one term for each $z$. The proportion of this term to the total is $p(z\mid x)$.}
+
+We get for component 1:
+\[
+\frac{\frac{1}{2\sqrt{2\pi}} \exp(0)}{\frac{1}{2\sqrt{2\pi}} \exp(0) + \frac{1}{2\sqrt{2\pi}} \exp\left(-\frac{1}{2}\right)} = \frac{1}{1 + \frac{1}{\sqrt{e}}}
+\]
+and for component 2: 
+\[
+\frac{\frac{1}{2\sqrt{2\pi}} \exp\left(-\frac{1}{2}\right)}{\frac{1}{2\sqrt{2\pi}} \exp(0) + \frac{1}{2\sqrt{2\pi}} \exp\left(-\frac{1}{2}\right)} = \frac{\frac{1}{\sqrt{e}}}{1 + \frac{1}{\sqrt{e}}}
+\]
+}{}
+
+\end{document}
