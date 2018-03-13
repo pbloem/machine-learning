@@ -21,34 +21,34 @@ Imagine you do a newspaper round to help you get through these lean times.  On y
 \begin{tabular}{c  c  c  c  | c }
 Heavy & Smelly &  Big & Growling & Bites \\
 \hline
-No & No & No & No & No \\
-No & No & Yes & No & No \\
-Yes & Yes & No & Yes & No \\
-Yes & No & No & Yes & Yes \\
-No & Yes & Yes & No & Yes \\
-No & No & Yes & Yes & Yes \\
-No & No & No & Yes & Yes \\
-Yes & Yes & No & No & Yes \\
+\rc{No}  & \rc{No} & \rc{No}  & \rc{No}  & \oc{No} \\
+\rc{No}  & \rc{No} & \gc{Yes} & \rc{No}  & \oc{No} \\
+\gc{Yes} & \gc{Yes}& \rc{No}  & \gc{Yes} & \oc{No} \\
+\gc{Yes} & \rc{No} & \rc{No}  & \gc{Yes} & \bc{Yes} \\
+\rc{No}  &\gc{Yes} & \gc{Yes} & \rc{No}  & \bc{Yes} \\
+\rc{No}  & \rc{No} & \gc{Yes} & \gc{Yes} & \bc{Yes} \\
+\rc{No}  & \rc{No} & \rc{No}  & \gc{Yes} & \bc{Yes} \\
+\gc{Yes} &\gc{Yes} & \rc{No}  & \rc{No}  & \bc{Yes} \\
 \hline
 \end{tabular}
 \end{center}
 
 
-What is the entropy of the target value \emph{Bites} in the data?
+\qu What is the entropy of the target value \emph{Bites} in the data?
 \ans{
-\[H(Bites)= − \sfrac{5}{8}\log_2\sfrac{5}{8} - \sfrac{3}{8}\log_2\sfrac{3}{8} \approx 0.9544\]
+\[H(\text{Bites})= - \sfrac{5}{8}\log_2\sfrac{5}{8} - \sfrac{3}{8}\log_2\sfrac{3}{8} \approx 0.9544\]
 }{}
 
 
-Which attribute would the ID3 algorithm choose to use for the root of the tree, if we turn off pruning? Hint: you can figure this out by looking at the data without explicitly calculating the information gain for each of the attributes.
-\ans{Growling}
+\qu Which attribute would the ID3 algorithm choose to use for the root of the tree (without pruning)?
+\ans{Growling}{}
 
 
-What is the information gain of the attribute you chose in the previous question?
+\qu What is the information gain of the attribute you chose in the previous question?
 \ans{approximately 0.0487}{}
 
 
-Draw the full decision tree that would be learned for this data using ID3 without pruning.
+\qu Draw the full decision tree that would be learned for this data using ID3 without pruning.
 
 \ans{
 
@@ -60,81 +60,136 @@ Draw the full decision tree that would be learned for this data using ID3 withou
 }{}
 
 
-Suppose three new dogs appear in your round as listed in the table be-
-low. Classify them using the decision tree from the previous question.
+\qu Suppose three new dogs appear in your round as listed in the table below. Classify them using the decision tree from the previous question.
 
 \begin{center}
 \begin{tabular}{c c c c c | c }
 Dog & Heavy & Smelly &  Big & Growling & Bites \\
 \hline
-Buster & Yes & Yes & Yes & Yes & \ans{No}{?} \\
-Pluto & No & Yes & No & Yes & \ans{No}{?} \\
-Zeus & Yes & Yes & No & No & \ans{Yes}{?} \\
+Buster & \gc{Yes} & \gc{Yes} & \gc{Yes} & \gc{Yes} & \ans{\oc{No}}{?} \\
+Pluto  & \rc{No}  & \gc{Yes} & \rc{No}  & \gc{Yes} & \ans{\oc{No}}{?} \\
+Zeus   & \gc{Yes} & \gc{Yes} & \rc{No}  & \rc{No} & \ans{\bc{Yes}}{?} \\
 \hline
 \end{tabular}
 \end{center}
 
-The standard ID3 algorithm does not specify what to do if all features have zero (0.0) information gain. How would you proceed in this case? Why?
-
+\qu Someone proposes a new scheme to prevent overfitting: she suggests to set a pre-defined maximum depth for the decision trees. When the standard algorithm reaches this depth, it terminates. Could this help to prevent overfitting? Why (not)?
 \ans{
-As noted in the lecture, stopping in this case causes problems with XOR-like datasets. To avoid this, you should proceed with a split, the actual choice of attribute is not important as long as you don’t stop: even picking a random split is fine.
+It ensures smaller, simpler trees (a smaller model space) and therefore can reduce the risk of overfitting. Overfitting is essentially memorizing too much of your data. Smaller trees can memorize less.
 }{}
 
-Someone proposes a new scheme to prevent overfitting: she suggests to set a pre-defined maximum depth for the decision trees. When the standard algorithm reaches this depth, it terminates. Could this help to prevent overfitting? Why (not)?
-\ans{
-It ensures smaller, simpler trees – a smaller hypothesis space and therefore can reduce the risk of overfitting. Overfitting is essentially memorizing too much of your data. Smaller trees can memorize less.
-}{}
-
-In the maximum depth scheme introduced above, how would you determine a good value for the maximum depth for a given data set?
+\qu In the maximum depth scheme introduced above, how would you determine a good value for the maximum depth for a given data set?
 
 \ans{
 The maximum depth is a \emph{hyperparameter}. We can choose good values for our hyperparameters by splitting our training data into a validation set and trying different values (either by cross validation or just single runs).}{}
 
-\section{Ensembles}
+\qu Why can't we apply L1-regularization to this decision tree learning problem?
 
+\ans{L1 regularization assumes that your model is described by a real valued vector of parameters (i.e. your model space is continuous.) Decision trees have a \emph{discrete} model space.}{}
 
-You are working with a considerably noisy dataset, in which classifiers
-tend to overfit on the training data. Which ensemble method would
-you propose to alleviate this problem? Why?
+\section{Variational autoencoders}
 
-\ans{Bagging. Training a high number of classifiers on different samples of
-the training data each time means the noisy data instances will be less
-likely to be featured across datasets than instances correctly displaying
-the problem’s features. Some classifiers may overfit, but their collective
-vote is likely to downplay the votes of overfit classifiers.}{}
+The maximum likelihood principle tells us to optimize the quantity $p(x\mid \theta)$ as a function of $\theta$ (the model parameters).
 
-You want to use AdaBoost to improve the performance of classification
-of your dataset. You are going to use a Neural Network as the base
-learner.  How big (in number of hidden layers and neurons) should
-your neural network be? Why?
+For complex models, this does not usually lead to a closed form solution and applying gradient descent to $\theta$ directly tends to lead to mode collapse. Instead we rely on the following equality:
 
-\ans{We'd want a very small NN. Boosting works best with weak learners
-that focus at each step on the most salient features of the data currently
-under consideration, leaving the learning of the remaining features to
-other iterations.}{}
+\[
+\ln p(\x\mid \theta) = L(\rc{q}, \theta) + KL(\rc{q}, \gc{p}) \\
+\]
+with
+\begin{align*}
+\rc{q}(\z)&\; \text{any distribution on $\z$} \\
+\gc{p}&= p(\z \mid \x, \theta) \\
+KL(\rc{q}, \gc{p})&\; \text{the Kullback-Leibler divergence}\\
+L(\rc{q}, \theta) &= \E_\rc{q} \ln \frac{p(\x, \z \mid \theta) }{\rc{q}(\z)}
+\end{align*}
 
-When combining multiple learners, it is preferable to find a set of diverse learners that differ in their decisions, so that they complement each other. Taking as an example a classification task, list and explain at least two different approaches you can follow to obtain diverse classifiers from your dataset.
+We will first prove that this equality holds. We start with the right hand side, fill in the components, and derive the left-hand side.
 
-\ans
-Diverse learners can be trained over the same data by using different algorithms (e.g., neural networks, naive Bayes classifiers, ...), or if using the same algorithm, by tuning it in different ways (such as by setting a different number of hidden layer neurons in the neural network.  
+\qu Fill in the blanks. We have written everything in terms of \emph{expectations} $\E$ to simplify the notation. The expectation is over the random variable $\z$, while $\x$ has some definite value. Note that $\E f(\z) + \E g(\z) = \E\left [f(\z) + g(\z)\right]$.
 
-Additionally, instead of training learners over a dataset's complete set of input features, a partitioning of the input features can be used, to train different learners over the different subsets (e.g., a neural network handling a data instance’s continuous variables, while a C4.5 decision tree handles the categorical variables). 
+\begin{align*}
+L(\rc{q}, \theta) + KL(\rc{q}, \gc{p}) &= \ans{\E_\rc{q} \ln \frac{p(\x, \z \mid \theta) }{\rc{q}(\z)} -\E_\rc{q} \ln \frac{p(\z \mid \x, \theta)}{\rc{q}(\z)}}{\ldots}\\
+&= \mathbb{E}_\rc{q} \ln \frac{p(\x, \z \mid \theta) }{\rc{q}(\z)} - \mathbb{E}_\rc{q} \ln \frac{p(\z \mid \x, \theta)}{\rc{q}(\z)}\\
+&= \ans{\E_\rc{q}  \ln p(\x,\z\mid \theta) - \E_\rc{q} \ln \rc{q}(z) - \E_\rc{q} \ln p(\z\mid \x, \theta) + \E_\rc{q} \ln \rc{q}(z)}{\ldots}\\
+&= \mathbb{E}_\rc{q} \ln p(\x, \z \mid \theta)  - \mathbb{E}_\rc{q} \ln p(\z \mid \x, \theta) \\
+&= \mathbb{E}_\rc{q} \ln \frac{p(\x, \z \mid \theta) }{\ln p(\z \mid \x, \theta) } = \ans{\mathbb{E}_\rc{q} \ln \frac{p(\z\mid \x,  \theta)p(\x\mid \theta) }{\ln p(\z \mid \x, \theta)}}{\ldots}\\
+&= \mathbb{E}_\rc{q} \ln p(\x \mid \theta)  = \ln p(\x \mid \theta)  
+\end{align*}
 
-Another possibility is to train the different base-learners over different subsets of the training set (which is the approach followed by bagging and boosting). 
+In the EM algorithm, we search by alternately optimizing $L(\rc{q}\mid \theta)$ with respect to $\theta$ and setting $\rc{q}$ equal to $\gc{p}$ (so that the KL term becomes zero).
 
-Consider a system with multiple sensors producing different kinds of data for each event it logs: a photo, a sound file, as well as numerical values of temperature, pressure and humidity. You want to train a classifier that will tell you for future logged events whether it is raining or not. 
+\qu For the variational autoencoder, we cannot (easily) perform this last step. Why not?
+\ans{
+In the variational autoencoder, our model is a neural network that transforms $\z$ into a distribution on $\x$. To set the KL divergence term equal to zero, we would have to compute $p(\z \mid \x, \theta)$: i.e. a probability distribution on $\z$ that indicates for which $\z$ our observed $\x$ is most likely.
 
-By itself, no single kind of data will give you a classifier that is accurate enough, but also no single learner at your disposal will enable you to consider all of an event's input data together. Name
-two methods to combine the outputs from different classifiers working in parallel over the different kinds of data and explain briefly how they work.
+While sampling techniques exist to approximate this kind of distribution, they are costly and can be very inaccurate.
+}{}
 
-\ans{Possible approaches to aggregate the decisions of multiple classifiers include voting/averaging and stacking.}
+Instead, we \emph{approximate} $\gc{p}(\z \mid\x, \theta)$ with a neural network $\rc{q}(\z \mid \x)$ that produces a distribution on $\z$ given some $\x$. This gives us an auto-encoder-like structure. An input is mapped to a distribution $\rc{q}(\z\mid \x)$ by the \emph{encoder}. We sample a single $\z$ from this distribution and pass it through the \emph{decoder} $p(\x \mid \z, \theta)$ to produce a distribution on $\x$ (see the \href{https://www.dropbox.com/s/bsjiwug8ykk33t6/51.DeepLearning2.annotated.pdf?dl=0}{slides} for diagrams).
 
-You are working with a dataset where you get comparable classification accuracies from both a decision tree inducer and a K-nearest neighbours classifier. Given that there’s a fair amount of noise in the data, you then consider using Bagging to improve your classification.
+To find a way to train such an architecture, we turn again to our decomposition of the likelihood:
+\[
+\ln p(\x\mid \theta) = L(\rc{q}, \theta) + KL(\rc{q}, \gc{p}) \p \\
+\]
+Since the KL divergence is always positive, this tells us that 
 
-Which of the two classifiers would you expect to benefit the most from Bagging? Motivate your answer.
+\[
+\ln p(\x\mid \theta) \geq L(\rc{q}, \theta) \\
+\]
+for \emph{any} $\rc{q}$ we choose. This is why $L$ is called the variational \emph{lower bound}.\footnotemark If we choose our parameters $\theta$ and our function $\rc{q}$ to maximize $L$, we are also, indirectly, maximizing $p(\x\mid \theta)$.\footnotemark
 
-\ans{The decision tree inducer would benefit the most. Bagging works best with unstable algorithms, as they generate the most diverse learners from the different training sets given to them by Bagging.  
+\footnotetext{The word \emph{variational} comes from the fact that one of its arguments, \rc{q}, is a function (the calculus of functions is called \emph{variational} calculus). For our purposes, this distinction doesn't matter much, since the function $\rc{q}$ is defined by a set of parameters, so ultimately we will take the derivative over those parameters, as we are used to.}
 
-Furthermore, decision tree inducers can easily be parametrized to make them even more unstable (for instance, by switching pruning off), and thus of even greater benefit in such a setup}{}
+\footnotetext{How close the lower bound $L$ comes to the true value $p(\x\mid \theta)$ depends on how well our encoder network $\rc{q}$ approximates the true conditional distribution on $\z$: $\gc{p}(\z \mid\x, \theta)$.}
+
+To do so, we rewrite it into two separate terms: a KL divergence and an expectation:
+
+\[
+L(\rc{q}, \theta) = - KL(\rc{q}(\z\mid\x), p(\z)) + \E_\rc{q} \ln p(\x\mid \z, \theta)
+\]
+
+\qu Show that this equation holds (i.e. rewrite the left part into the right).
+\ans{
+We will omit the dependency of $p$ on $\theta$, to clarify the notation.
+\begin{align*}
+	L(\rc{q}, \theta) &= \E_\rc{q} \ln \frac{p(\x, \z)}{\rc{q}(\z\mid \x)} \\
+	&= \E \ln p(\x, \z) - \E \rc{q}(\z \mid \x) \\
+	&= \E \ln \left[p(\x\mid \z)p(\z)\right] - \E \ln \rc{q}(\z \mid \x) \\
+	&= \E \ln p(\x \mid \z) + \E \ln p(\z) - \E \ln \rc{q}(\z \mid \x) \\
+	&= \E \ln p(\x \mid \z) - \left [ \E \ln \rc{q}(\z \mid \x) - \E \ln p(\z) \right ]\\
+	&= - KL(\rc{q}(\z\mid\x), p(\z)) + \E \ln p (\x\mid \z)
+\end{align*}
+}{}
+
+Thus, to optimize our variational autoencoder, we should maximize $L$. In other words, $-L$ is our loss function. The only problem left to solve is that the second term is an expectation (which we cannot compute explicitly). 
+\qu How is this solved in practice?
+
+\ans{We take a single sample from $\rc{q}(\z\mid \x)$ and use $\ln p(\x\mid \x)$ as a (very crude) estimate of the expectation term. To let the gradient propagate through the sampling, we add a sample from the standard MVN to the input and transform it to a sample from $\rc{q}$ by multiplying by a matrix $A$ (with $\Sigma = AA^T$) and adding the mean.}{}
 
 \end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

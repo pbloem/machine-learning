@@ -20,14 +20,13 @@
 The basic optimization objective for support vector machines is 
 \begin{align*}
 \text{minimize}\;\;&\frac{1}{2}||\bw|| + C\sum_i p_i\\
-\text{such that}\;\;&y_i(\bw^T\x_i + b) - 1 \geq 0\\
+\text{such that}\;\;&y_i(\bw^T\x_i + b) \geq 1 - p_i\\
 \text{and} \;\;&p_i \geq 0
 \end{align*}
 
 \qu What does the $i$ iterate over? How many terms does the sum have, and how many constraints are there?
 
-\ans{It iterates over the data. There are as many terms and constraints as there are instances in the data.}{}
-
+\ans{It iterates over the data. There are as many terms as there are instances in the data. There are two constraints per instance.}{}
 
 \qu What is the value of $y_i$ in this expression? What is its function?
 
@@ -155,7 +154,7 @@ k'(\ba, \bb) = (\ba^T\bb +1)^2\;\;\;\text{?}
 k(\ba, \bb) &= \left( \ma{a_1\\ a_2}^T\ma{b_1\\ b2} + 1\right)^2\\
  &= (a_1 b_1 + a_2 b_2)^2 +  2( a_1 b_1 + a_2 b_2) + 1 \\
  &= a_1b_1a_1b_1 + 2a_1b_1a_2b_2 + a_2b_2a_2b_2 + 2a_1b_1 + 2a_2b_2 + 1\\
- &= \ma{1 \\ \sqrt{2}a_1 \\ {a_1}^2\\\sqrt{2}a_1a_2 \\{a_2}^2} ^T\ma{1 \\ \sqrt{2}b_1 \\ {b_1}^2\\\sqrt{2}b_1b_2 \\{b_2}^2} 
+ &= \ma{1 \\ \sqrt{2}a_1 \\ \sqrt{2}a_2 \\ {a_1}^2\\\sqrt{2}a_1a_2 \\{a_2}^2} ^T\ma{1 \\ \sqrt{2}b_1 \\ \sqrt{2}b_2 \\ {b_1}^2\\\sqrt{2}b_1b_2 \\{b_2}^2} 
 \end{align*}
 }{}
 
