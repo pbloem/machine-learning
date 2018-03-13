@@ -113,7 +113,7 @@ L(\rc{q}, \theta) + KL(\rc{q}, \gc{p}) &= \ans{\E_\rc{q} \ln \frac{p(\x, \z \mid
 &= \mathbb{E}_\rc{q} \ln \frac{p(\x, \z \mid \theta) }{\rc{q}(\z)} - \mathbb{E}_\rc{q} \ln \frac{p(\z \mid \x, \theta)}{\rc{q}(\z)}\\
 &= \ans{\E_\rc{q}  \ln p(\x,\z\mid \theta) - \E_\rc{q} \ln \rc{q}(z) - \E_\rc{q} \ln p(\z\mid \x, \theta) + \E_\rc{q} \ln \rc{q}(z)}{\ldots}\\
 &= \mathbb{E}_\rc{q} \ln p(\x, \z \mid \theta)  - \mathbb{E}_\rc{q} \ln p(\z \mid \x, \theta) \\
-&= \mathbb{E}_\rc{q} \ln \frac{p(\x, \z \mid \theta) }{\ln p(\z \mid \x, \theta) } = \ans{\mathbb{E}_\rc{q} \ln \frac{p(\z\mid \x,  \theta)p(\x\mid \theta) }{\ln p(\z \mid \x, \theta)}}{\ldots}\\
+&= \mathbb{E}_\rc{q} \ln \frac{p(\x, \z \mid \theta) }{ p(\z \mid \x, \theta) } = \ans{\mathbb{E}_\rc{q} \ln \frac{p(\z\mid \x,  \theta)p(\x\mid \theta) }{ p(\z \mid \x, \theta)}}{\ldots}\\
 &= \mathbb{E}_\rc{q} \ln p(\x \mid \theta)  = \ln p(\x \mid \theta)  
 \end{align*}
 
