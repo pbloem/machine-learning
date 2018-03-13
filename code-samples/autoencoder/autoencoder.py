@@ -140,9 +140,9 @@ if __name__ == "__main__":
                         help="Learning rate",
                         default=0.01, type=float)
 
-    parser.add_argument("-h", "--hidden-size",
+    parser.add_argument("-H", "--hidden-size",
                         dest="hidden",
-                        help="Latjent vector size",
+                        help="Latent vector size",
                         default=64, type=int)
 
     options = parser.parse_args()
