@@ -15,14 +15,7 @@ matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 
-print('devices', device_lib.list_local_devices())
-
-RANDO = 42
-SMILING = [0, 7, 8, 3, 11, 12, 13, 14, 20, 27, 155, 153, 154, 297]
-NONSMILING = [1, 2, 3, 6, 10, 60, 61, 136, 138, 216, 219, 280]
-
-# faces = datasets.fetch_olivetti_faces()
-faces = datasets.fetch_lfw_people(data_home='.')
+from argparse import ArgumentParser
 
 # # smiling/nonsmiling
 # fig = plt.figure(figsize=(5, 3))
@@ -42,77 +35,107 @@ faces = datasets.fetch_lfw_people(data_home='.')
 from keras.layers import Input, Conv2D, Conv2DTranspose, Dense, Reshape, MaxPooling2D, UpSampling2D, Flatten, Cropping2D
 from keras.models import Model, Sequential
 
-hidden_size = 64
+def go(options):
 
-encoder = Sequential()
+    print('devices', device_lib.list_local_devices())
 
-encoder.add(Flatten(input_shape=(62, 47, 1)))
-encoder.add(Dense(1024, activation='relu'))
-encoder.add(Dense(512, activation='relu'))
-encoder.add(Dense(256, activation='relu'))
-encoder.add(Dense(128, activation='relu'))
-encoder.add(Dense(hidden_size))
+    RANDO = 42
+    SMILING = [0, 7, 8, 3, 11, 12, 13, 14, 20, 27, 155, 153, 154, 297]
+    NONSMILING = [1, 2, 3, 6, 10, 60, 61, 136, 138, 216, 219, 280]
 
-decoder = Sequential()
+    # faces = datasets.fetch_olivetti_faces()
+    faces = datasets.fetch_lfw_people(data_home='.')
 
-decoder.add(Dense(128, activation='relu', input_dim=64))
-decoder.add(Dense(256, activation='relu'))
-decoder.add(Dense(512, activation='relu'))
-decoder.add(Dense(1024, activation='relu'))
-decoder.add(Dense(62*47, activation='relu'))
-decoder.add(Reshape((62,47,1)))
+    hidden_size = 64
 
-auto = Sequential()
+    encoder = Sequential()
 
-auto.add(encoder)
-auto.add(decoder)
+    encoder.add(Flatten(input_shape=(62, 47, 1)))
+    encoder.add(Dense(1024, activation='relu'))
+    encoder.add(Dense(512, activation='relu'))
+    encoder.add(Dense(256, activation='relu'))
+    encoder.add(Dense(128, activation='relu'))
+    encoder.add(Dense(hidden_size))
 
-auto.summary()
+    decoder = Sequential()
 
-optimizer = Adam(lr=0.001)
-auto.compile(optimizer=optimizer, loss='mse')
+    decoder.add(Dense(128, activation='relu', input_dim=64))
+    decoder.add(Dense(256, activation='relu'))
+    decoder.add(Dense(512, activation='relu'))
+    decoder.add(Dense(1024, activation='relu'))
+    decoder.add(Dense(62*47, activation='relu'))
+    decoder.add(Reshape((62,47,1)))
 
-x = faces.images[:, :, :, None] / 255.
+    auto = Sequential()
 
-for e in range(1):
-    auto.fit(x, x, epochs=5, batch_size=256, shuffle=True)
+    auto.add(encoder)
+    auto.add(decoder)
 
-    out = auto.predict(x[:400, :])
+    auto.summary()
 
-    fig = plt.figure(figsize=(5, 6))
+    optimizer = Adam(lr=options.lr)
+    auto.compile(optimizer=optimizer, loss='mse')
+
+    x = faces.images[:, :, :, None] / 255.
+
+    for e in range(options.epochs//5):
+        auto.fit(x, x, epochs=5, batch_size=256, shuffle=True)
+
+        out = auto.predict(x[:400, :])
+
+        fig = plt.figure(figsize=(5, 6))
+
+        # plot several images
+        for i in range(30):
+            ax = fig.add_subplot(6, 5, i + 1, xticks=[], yticks=[])
+            ax.imshow(out[i, ...].reshape((62, 47)), cmap=plt.cm.gray)
+
+        plt.savefig('faces-reconstructed.{:03d}.pdf'.format(e))
+
+    smiling = x[SMILING, ...]
+    nonsmiling = x[NONSMILING, ...]
+
+    smiling_latent = encoder.predict(smiling)
+    nonsmiling_latent = encoder.predict(nonsmiling)
+
+    smiling_mean = smiling_latent.mean(axis=0)
+    nonsmiling_mean = nonsmiling_latent.mean(axis=0)
+
+    smiling_vector = smiling_mean - nonsmiling_mean
+
+    rando_latent = encoder.predict(x[None, RANDO, ...])
+
+    fig = plt.figure(figsize=(5, 1))
 
     # plot several images
-    for i in range(30):
+    for add in np.linspace(0.0, 1.0, 30):
+
+        gen_latent = rando_latent + add * smiling_vector
+        gen = decoder.predict(gen_latent)
+
         ax = fig.add_subplot(6, 5, i + 1, xticks=[], yticks=[])
-        ax.imshow(out[i, ...].reshape((62, 47)), cmap=plt.cm.gray)
+        ax.imshow(gen.reshape((62, 47)), cmap=plt.cm.gray)
 
-    plt.savefig('faces-reconstructed.{:03d}.pdf'.format(e))
-
-smiling = x[SMILING, ...]
-nonsmiling = x[NONSMILING, ...]
-
-smiling_latent = encoder.predict(smiling)
-nonsmiling_latent = encoder.predict(nonsmiling)
-
-smiling_mean = smiling_latent.mean(axis=0)
-nonsmiling_mean = nonsmiling_latent.mean(axis=0)
-
-smiling_vector = smiling_mean - nonsmiling_mean
-
-rando_latent = encoder.predict(x[None, RANDO, ...])
-
-fig = plt.figure(figsize=(5, 1))
-
-# plot several images
-for add in np.linspace(0.0, 1.0, 30):
-
-    gen_latent = rando_latent + add * smiling_vector
-    gen = decoder.predict(gen_latent)
-
-    ax = fig.add_subplot(6, 5, i + 1, xticks=[], yticks=[])
-    ax.imshow(gen.reshape((62, 47)), cmap=plt.cm.gray)
-
-plt.savefig('rando-to-smiling.pdf'.format(e))
+    plt.savefig('rando-to-smiling.pdf'.format(e))
 
 
+if __name__ == "__main__":
 
+    ## Parse the command line options
+    parser = ArgumentParser()
+
+    parser.add_argument("-e", "--epochsl",
+                        dest="epochs",
+                        help="Number of epochs.",
+                        default=150, type=int)
+
+    parser.add_argument("-l", "--learn-rate",
+                        dest="lr",
+                        help="Learning rate",
+                        default=0.01, type=float)
+
+    options = parser.parse_args()
+
+    print('OPTIONS', options)
+
+    go(options)
