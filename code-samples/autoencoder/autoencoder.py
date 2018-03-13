@@ -3,6 +3,7 @@ import keras
 from keras.models import Sequential, Model
 from keras.layers import Dense, Activation, Conv2D, MaxPool2D, Dropout, Flatten, Input, Reshape
 from keras.optimizers import Adam
+from tensorflow.python.client import device_lib
 
 from sklearn import datasets
 
@@ -14,10 +15,11 @@ matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 
+print('devices', device_lib.list_local_devices())
+
 RANDO = 42
 SMILING = [0, 7, 8, 3, 11, 12, 13, 14, 20, 27, 155, 153, 154, 297]
 NONSMILING = [1, 2, 3, 6, 10, 60, 61, 136, 138, 216, 219, 280]
-
 
 # faces = datasets.fetch_olivetti_faces()
 faces = datasets.fetch_lfw_people(data_home='.')
