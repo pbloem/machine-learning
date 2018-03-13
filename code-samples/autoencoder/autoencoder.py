@@ -45,7 +45,7 @@ def go(options):
 
     plt.savefig('nonsmiling-faces.pdf')
 
-    hidden_size = 64
+    hidden_size = options.hidden
 
     encoder = Sequential()
 
@@ -139,6 +139,11 @@ if __name__ == "__main__":
                         dest="lr",
                         help="Learning rate",
                         default=0.01, type=float)
+
+    parser.add_argument("-h", "--hidden-size",
+                        dest="hidden",
+                        help="Latjent vector size",
+                        default=64, type=int)
 
     options = parser.parse_args()
 
