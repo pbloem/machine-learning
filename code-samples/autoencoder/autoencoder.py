@@ -77,19 +77,21 @@ def go(options):
 
     x = faces.images[:, :, :, None] / 255.
 
-    for e in range(options.epochs//5):
-        auto.fit(x, x, epochs=5, batch_size=256, shuffle=True)
+    auto.fit(x, x,
+             epochs=options.epochs,
+             batch_size=256, shuffle=True,
+             callbacks=[keras.callbacks.TensorBoard(log_dir='./logs')])
 
-        out = auto.predict(x[:400, :])
-
-        fig = plt.figure(figsize=(5, 6))
-
-        # plot several images
-        for i in range(30):
-            ax = fig.add_subplot(6, 5, i + 1, xticks=[], yticks=[])
-            ax.imshow(out[i, ...].reshape((62, 47)), cmap=plt.cm.gray)
-
-        plt.savefig('faces-reconstructed.{:03d}.pdf'.format(e))
+        # out = auto.predict(x[:400, :])
+        #
+        # fig = plt.figure(figsize=(5, 6))
+        #
+        # # plot several images
+        # for i in range(30):
+        #     ax = fig.add_subplot(6, 5, i + 1, xticks=[], yticks=[])
+        #     ax.imshow(out[i, ...].reshape((62, 47)), cmap=plt.cm.gray)
+        #
+        # plt.savefig('faces-reconstructed.{:03d}.pdf'.format(e))
 
     smiling = x[SMILING, ...]
     nonsmiling = x[NONSMILING, ...]
@@ -103,7 +105,7 @@ def go(options):
     smiling_vector = smiling_mean - nonsmiling_mean
 
     randos = 6
-    k = 13
+    k = 9
     fig = plt.figure(figsize=(k, randos))
 
     for rando in range(randos):
