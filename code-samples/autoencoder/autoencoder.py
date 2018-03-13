@@ -39,7 +39,6 @@ def go(options):
 
     print('devices', device_lib.list_local_devices())
 
-    RANDO = 42
     SMILING = [0, 7, 8, 3, 11, 12, 13, 14, 20, 27, 155, 153, 154, 297]
     NONSMILING = [1, 2, 3, 6, 10, 60, 61, 136, 138, 216, 219, 280]
 
@@ -103,20 +102,24 @@ def go(options):
 
     smiling_vector = smiling_mean - nonsmiling_mean
 
-    rando_latent = encoder.predict(x[None, RANDO, ...])
+    randos = 6
+    k = 13
+    fig = plt.figure(figsize=(k, randos))
 
-    fig = plt.figure(figsize=(5, 1))
+    for rando in range(randos):
+        rando_latent = encoder.predict(x[None, rando, ...])
 
-    # plot several images
-    for add in np.linspace(0.0, 1.0, 30):
+        # plot several images
+        adds = np.linspace(-1.0, 1.0, k)
 
-        gen_latent = rando_latent + add * smiling_vector
-        gen = decoder.predict(gen_latent)
+        for i in range(k):
+            gen_latent = rando_latent + adds[i] * smiling_vector
+            gen = decoder.predict(gen_latent)
 
-        ax = fig.add_subplot(6, 5, i + 1, xticks=[], yticks=[])
-        ax.imshow(gen.reshape((62, 47)), cmap=plt.cm.gray)
+            ax = fig.add_subplot(randos, k, rando * k + i + 1, xticks=[], yticks=[])
+            ax.imshow(gen.reshape((62, 47)), cmap=plt.cm.gray)
 
-    plt.savefig('rando-to-smiling.pdf'.format(e))
+    plt.savefig('rando-to-smiling.pdf')
 
 
 if __name__ == "__main__":
