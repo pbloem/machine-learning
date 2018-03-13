@@ -58,7 +58,7 @@ def go(options):
 
     decoder = Sequential()
 
-    decoder.add(Dense(128, activation='relu', input_dim=64))
+    decoder.add(Dense(128, activation='relu', input_dim=hidden_size))
     decoder.add(Dense(256, activation='relu'))
     decoder.add(Dense(512, activation='relu'))
     decoder.add(Dense(1024, activation='relu'))
