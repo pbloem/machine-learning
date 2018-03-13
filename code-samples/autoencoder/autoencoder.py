@@ -8,6 +8,10 @@ from sklearn import datasets
 
 import math
 import numpy as np
+
+import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 
 RANDO = 42
@@ -68,8 +72,8 @@ auto.compile(optimizer=optimizer, loss='mse')
 
 x = faces.images[:, :, :, None] / 255.
 
-for e in range(10):
-    auto.fit(x, x, epochs=1, batch_size=256, shuffle=True)
+for e in range(1):
+    auto.fit(x, x, epochs=5, batch_size=256, shuffle=True)
 
     out = auto.predict(x[:400, :])
 
