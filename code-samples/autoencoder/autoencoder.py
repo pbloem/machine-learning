@@ -17,21 +17,6 @@ import matplotlib.pyplot as plt
 
 from argparse import ArgumentParser
 
-# # smiling/nonsmiling
-# fig = plt.figure(figsize=(5, 3))
-# for i in range(len(SMILING)):
-#     ax = fig.add_subplot(3, 5, i + 1, xticks=[], yticks=[])
-#     ax.imshow(faces.images[SMILING[i], :, :], cmap='gray')
-#
-# plt.savefig('smiling-faces.pdf')
-#
-# fig = plt.figure(figsize=(5, 3))
-# for i in range(len(NONSMILING)):
-#     ax = fig.add_subplot(3, 5, i + 1, xticks=[], yticks=[])
-#     ax.imshow(faces.images[NONSMILING[i], :, :], cmap='gray')
-#
-# plt.savefig('nonsmiling-faces.pdf')
-
 from keras.layers import Input, Conv2D, Conv2DTranspose, Dense, Reshape, MaxPooling2D, UpSampling2D, Flatten, Cropping2D
 from keras.models import Model, Sequential
 
@@ -39,11 +24,26 @@ def go(options):
 
     print('devices', device_lib.list_local_devices())
 
-    SMILING = [0, 7, 8, 3, 11, 12, 13, 14, 20, 27, 155, 153, 154, 297]
+    SMILING = [0, 7, 8, 11, 12, 13, 14, 20, 27, 155, 153, 154, 297]
     NONSMILING = [1, 2, 3, 6, 10, 60, 61, 136, 138, 216, 219, 280]
 
     # faces = datasets.fetch_olivetti_faces()
     faces = datasets.fetch_lfw_people(data_home='.')
+
+    # smiling/nonsmiling
+    fig = plt.figure(figsize=(5, 3))
+    for i in range(len(SMILING)):
+        ax = fig.add_subplot(3, 5, i + 1, xticks=[], yticks=[])
+        ax.imshow(faces.images[SMILING[i], :, :], cmap='gray')
+
+    plt.savefig('smiling-faces.pdf')
+
+    fig = plt.figure(figsize=(5, 3))
+    for i in range(len(NONSMILING)):
+        ax = fig.add_subplot(3, 5, i + 1, xticks=[], yticks=[])
+        ax.imshow(faces.images[NONSMILING[i], :, :], cmap='gray')
+
+    plt.savefig('nonsmiling-faces.pdf')
 
     hidden_size = 64
 
