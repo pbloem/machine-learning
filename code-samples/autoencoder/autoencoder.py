@@ -80,6 +80,7 @@ def go(options):
     auto.fit(x, x,
              epochs=options.epochs,
              batch_size=256, shuffle=True,
+             validation_split=0.1,
              callbacks=[keras.callbacks.TensorBoard(log_dir='./logs')])
 
         # out = auto.predict(x[:400, :])
